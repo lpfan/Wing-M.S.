@@ -1,12 +1,12 @@
 from flask import Flask
 from flask.ext.admin import Admin
-from admin.index import GeneralView
+from admin.index import ArticlesView
 
 
 app = Flask(__name__)
 
 admin = Admin(app)
-admin.add_view(GeneralView(name='Articles'))
+admin.add_view(ArticlesView(name='Articles'))
 
 app.debug = True
 
