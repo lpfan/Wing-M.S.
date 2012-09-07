@@ -1,14 +1,19 @@
 from flask import Flask
 from flask.ext.admin import Admin
-from admin.index import ArticlesView
-
+from admin.models import Articles
+from flask.ext.admin.contrib.peeweemodel import ModelView
 
 app = Flask(__name__)
 
 admin = Admin(app)
-admin.add_view(ArticlesView(name='Articles'))
+admin.add_view(ModelView(
+	Articles,
+	name="Articles")
+)
 
 app.debug = True
+SECRET_KEY = 'misha1987'
+app.config.from_object(__name__)
 
 if __name__ == '__main__':
 	app.run()
