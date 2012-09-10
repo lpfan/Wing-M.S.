@@ -2,8 +2,8 @@ import os
 
 from flask import Flask
 from flask.ext.admin import Admin
-from admin.models import Article, Category
-from admin.utils import My_ModelView
+from admin.models import Article, Category, User
+from admin.utils import My_ModelView, UsersView
 
 def rel(*x):
 	return os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
@@ -13,13 +13,21 @@ UPLOAD_FOLDER = rel('uploads')
 from admin.file_upload import *
 
 admin = Admin(app)
+
 admin.add_view(My_ModelView(
 	Article,
-	name="Articles")
+	name="Articles",
+    category='Content')
 )
 admin.add_view(My_ModelView(
 	Category,
-	name="Categories")
+	name="Categories",
+    category='Content')
+)
+admin.add_view(UsersView(
+	User,
+	name="Users",
+    category='Administration')
 )
 
 app.debug = True

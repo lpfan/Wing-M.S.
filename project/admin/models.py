@@ -26,6 +26,27 @@ class Article(BaseModel):
 	is_visible = peewee.BooleanField(default=False)
 	date = peewee.DateField(default = dt.today().date())
 
+class User(BaseModel):
+    nickname = peewee.CharField()
+    fullname = peewee.CharField()
+    group = peewee.CharField()
+    password = peewee.CharField()
+    email = peewee.CharField()
+    is_active = peewee.BooleanField(default = True)
+
+    def __unicode__(self):
+        return "%s, %s, %s" % self.nickname, self.group, self.password
+
+    def is_admin(self):
+        status = True if self.group == "admin" else False
+        return status
+
+    def is_editor(self):
+        status = True if self.group == "editor" else False
+        return status
+
+
 _database.connect()
 Article.create_table(True)
 Category.create_table(True)
+User.create_table(True)
