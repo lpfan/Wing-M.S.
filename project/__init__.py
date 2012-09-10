@@ -10,6 +10,8 @@ def rel(*x):
 
 app = Flask(__name__)
 UPLOAD_FOLDER = rel('uploads')
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+
 from admin.file_upload import *
 
 admin = Admin(app)

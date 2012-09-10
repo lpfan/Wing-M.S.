@@ -1,7 +1,10 @@
+# -*- coding: utf-8 -*-
+
 import project, Image, os, pdb, json
 
 from project import app
 from flask import request, Response, send_file
+from werkzeug import secure_filename
 
 __UPLOAD_FOLDER = project.UPLOAD_FOLDER 
 __PICT_FOLDER = os.path.join(__UPLOAD_FOLDER, 'pict')
@@ -28,7 +31,10 @@ def uploaded_files():
 
 @app.route('/admin/image_upload/', methods=['POST', 'GET'])
 def image_upload():
-	pass
+	image = request.files['file']
+	if image and allowed_file(image.filename):
+		image = save_as_png(image)
+
 
 @app.route('/uploads/thumb/<string:file_name>')
 def get_image_thumb(file_name):
@@ -40,5 +46,18 @@ def get_image_thumb(file_name):
 	__pict = __PICT_FOLDER + '/' + file_name
 	return send_file(__pict, 'image/png')
 
-def create_thumbnail(target_path):
-	pass
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in project.ALLOWED_EXTENSIONS
+
+#save all uploaded images in png 
+def save_as_png(img_obj):
+	img = Image.open(img_obj)
+	img_filename = secure_filename(os.path.splitext(img_obj.filename)[0]) + '.png'
+	img.save(os.path.join(__PICT_FOLDER, img_filename))
+	img = Image.open(os.path.join(__PICT_FOLDER, img_filename))
+	create_thumbnail(pil_image = img, png_pict_filename = img_filename)
+
+def create_thumbnail(pil_image = '', png_pict_filename = ''):
+	pil_image.thumbnail((128, 128), Image.ANTIALIAS)
+	pil_image.save(os.path.join(__THUMB_FOLDER, png_pict_filename))
