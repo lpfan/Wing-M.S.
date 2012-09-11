@@ -18,15 +18,15 @@ def file_upload():
 
 @app.route('/admin/uploaded_files/', methods=['GET'])
 def uploaded_files():
-	__uploaded_dict = {}
-	files = []
+	__uploaded_files = []
+	__files = []
 	__pict_folder = '/' + '/'.join(__PICT_FOLDER.split('/')[-2:]) + '/'
 	__thumb_folder = '/' + '/'.join(__THUMB_FOLDER.split('/')[-2:]) +'/'
 	for (dirpath, dirname, filenames) in os.walk(__PICT_FOLDER):
-		files.extend(filenames)
-	for file in files:
-		__uploaded_dict.update({'image':os.path.join(__pict_folder, file), 'thumb':os.path.join(__thumb_folder ,file)})
-	resp = Response(json.dumps([__uploaded_dict]), status=200, mimetype='application/json')
+		__files.extend(filenames)
+	for file in __files:
+		__uploaded_files.append({'image':os.path.join(__pict_folder, file), 'thumb':os.path.join(__thumb_folder ,file)})
+	resp = Response(json.dumps(__uploaded_files), status=200, mimetype='application/json')
 	return resp
 
 @app.route('/admin/image_upload/', methods=['POST', 'GET'])
@@ -42,7 +42,7 @@ def get_image_thumb(file_name):
 	return send_file(__thumb, 'image/png')
 
 @app.route('/uploads/pict/<string:file_name>')
-def get_image_thumb(file_name):
+def get_image_pict(file_name):
 	__pict = __PICT_FOLDER + '/' + file_name
 	return send_file(__pict, 'image/png')
 
