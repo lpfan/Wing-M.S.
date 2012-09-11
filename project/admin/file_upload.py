@@ -33,7 +33,11 @@ def uploaded_files():
 def image_upload():
 	image = request.files['file']
 	if image and allowed_file(image.filename):
+		__pict_folder = '/' + '/'.join(__PICT_FOLDER.split('/')[-2:]) + '/'
 		image = save_as_png(image)
+		img_filename = os.path.basename(image.filename) 
+		response = {'filelink':os.path.join(__pict_folder, img_filename)}
+		return json.dumps(response)
 
 
 @app.route('/uploads/thumb/<string:file_name>')
@@ -57,6 +61,7 @@ def save_as_png(img_obj):
 	img.save(os.path.join(__PICT_FOLDER, img_filename))
 	img = Image.open(os.path.join(__PICT_FOLDER, img_filename))
 	create_thumbnail(pil_image = img, png_pict_filename = img_filename)
+	return img
 
 def create_thumbnail(pil_image = '', png_pict_filename = ''):
 	pil_image.thumbnail((128, 128), Image.ANTIALIAS)
