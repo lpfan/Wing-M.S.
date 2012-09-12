@@ -1,0 +1,41 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+    <form method="POST" action="." class="form-horizontal">
+    {{ image_form_setting.csrf_token }}
+	    <div class="control-group">
+	    	{{ image_form_setting.allow_image_resize.label(class_='control-label') }} 
+	    	<div class="controls">
+	    		{{ image_form_setting.allow_image_resize(size=20) }}
+	    	</div>
+		</div>
+		<div class="control-group">
+			{{ image_form_setting.image_size_width.label(class_='control-label') }} 
+			<div class="controls">
+				{{ image_form_setting.image_size_width(size=20) }}
+			</div>
+		</div>
+		<div class="control-group">
+			{{ image_form_setting.image_size_height.label(class_='control-label') }} 
+			<div class="controls">
+				{{ image_form_setting.image_size_height(size=20) }}
+			</div>
+		</div>
+		<div class="control-group">
+			{{ image_form_setting.thumb_size_width.label(class_='control-label') }} 
+			<div class="controls">
+				{{ image_form_setting.thumb_size_width(size=20) }}
+			</div>
+		</div>
+		<div class="control-group">
+			{{ image_form_setting.thumb_size_height.label(class_='control-label') }} 
+			<div class="controls">
+				{{ image_form_setting.thumb_size_height(size=20) }}
+			</div>
+		</div>
+		<div class="control-group">
+			<div class="controls">
+	    		<input type="submit" value="Write" class="btn">
+	    	</div>
+	    </div>
+	</form>
+{% endblock %}

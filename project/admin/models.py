@@ -45,7 +45,6 @@ class User(BaseModel):
         status = True if self.group == "editor" else False
         return status
 
-
 _database.connect()
 Article.create_table(True)
 Category.create_table(True)

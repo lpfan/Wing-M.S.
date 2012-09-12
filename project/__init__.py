@@ -3,6 +3,7 @@ import os
 from flask import Flask
 from flask.ext.admin import Admin
 from admin.models import Article, Category, User
+from admin.settings import SettingsView
 from admin.utils import My_ModelView, UsersView
 
 def rel(*x):
@@ -11,6 +12,7 @@ def rel(*x):
 app = Flask(__name__)
 UPLOAD_FOLDER = rel('uploads')
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+SETTINGS_PATH = rel('settings.cfg')
 
 from admin.file_upload import *
 
@@ -30,6 +32,11 @@ admin.add_view(UsersView(
 	User,
 	name="Users",
     category='Administration')
+)
+
+admin.add_view(SettingsView(
+	name="Settings",
+	category='Administration')
 )
 
 app.debug = True

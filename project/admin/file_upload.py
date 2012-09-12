@@ -50,10 +50,6 @@ def get_image_pict(file_name):
 	__pict = __PICT_FOLDER + '/' + file_name
 	return send_file(__pict, 'image/png')
 
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1] in project.ALLOWED_EXTENSIONS
-
 #save all uploaded images in png 
 def save_as_png(img_obj):
 	img = Image.open(img_obj)
@@ -66,3 +62,7 @@ def save_as_png(img_obj):
 def create_thumbnail(pil_image = '', png_pict_filename = ''):
 	pil_image.thumbnail((128, 128), Image.ANTIALIAS)
 	pil_image.save(os.path.join(__THUMB_FOLDER, png_pict_filename))
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in project.ALLOWED_EXTENSIONS
