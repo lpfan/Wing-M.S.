@@ -21,3 +21,7 @@ class ConfigManager():
 
 	def get_config(self):
 		return self.config
+
+	def get_section_configs(self, aConfigSection):
+		raw_config = self.config.items(aConfigSection) 
+		return dict(raw_config)
