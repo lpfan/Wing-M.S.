@@ -1,16 +1,22 @@
-import pdb
-
-import project
+import pdb, project, ConfigParser
 
 from flask.ext.admin.contrib.peeweemodel import ModelView
-import ConfigParser
+from flask.ext.wtf import SelectField
+
 
 class My_ModelView(ModelView):
     edit_template = 'admin/custom_edit.html'
     create_template = 'admin/custom_create.html'
+    excluded_list_columns = ('text')
 
 class UsersView(ModelView):
     excluded_list_columns = ('password')
+    form_overrides = dict(group=SelectField)
+    form_args = dict(
+    		group = dict(
+            	choices=[(0, 'admin'), (1, 'editor')]
+        	)
+        )
 
 class ConfigManager():
 

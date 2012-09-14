@@ -1,6 +1,7 @@
 import peewee
 
 from datetime import datetime as dt
+from random import choice
 
 _database = peewee.MySQLDatabase('wing_cms', user='wing_user', passwd='wing_cms')
 
@@ -45,7 +46,29 @@ class User(BaseModel):
         status = True if self.group == "editor" else False
         return status
 
+class Album(BaseModel):
+    title = peewee.CharField(max_length=100)
+    description = peewee.TextField()
+    album_path = peewee.CharField()
+
+    def get_album_thumbnail(self):
+        photos = [f for f in self.photo_set]
+        thumbnail = choice(photos)
+        return thumbnail.get_thumbnail()
+
+class Photo(BaseModel):
+    album = peewee.ForeignKeyField(Album)
+    title = peewee.CharField()
+    photo_path = peewee.CharField()
+    file_name = peewee.CharField()
+
+    def get_thumbnail(self):
+        pass
+
+
 _database.connect()
 Article.create_table(True)
 Category.create_table(True)
 User.create_table(True)
+Album.create_table(True)
+Photo.create_table(True)

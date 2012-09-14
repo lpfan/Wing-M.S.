@@ -1,6 +1,6 @@
 import pdb, project, os
 
-from flask.ext.admin import Admin, BaseView, expose
+from flask.ext.admin import BaseView, expose
 from utils import ConfigManager
 from forms import ImageSettingsForm
 from flask import request, flash, redirect, url_for

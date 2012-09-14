@@ -44,12 +44,18 @@ def image_upload():
 @app.route('/uploads/thumb/<string:file_name>')
 def get_image_thumb(file_name):
 	__thumb = __THUMB_FOLDER + '/' + file_name
-	return send_file(__thumb, 'image/png')
+	try:
+		return send_file(__thumb, 'image/png')
+	except IOError:
+		print 'file was removed by someone'
 
 @app.route('/uploads/pict/<string:file_name>')
 def get_image_pict(file_name):
 	__pict = __PICT_FOLDER + '/' + file_name
-	return send_file(__pict, 'image/png')
+	try:
+		return send_file(__pict, 'image/png')
+	except IOError:
+		print 'file was removed by someone'
 
 #save all uploaded images in png 
 def save_as_png(img_obj):

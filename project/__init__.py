@@ -4,7 +4,9 @@ from flask import Flask
 from flask.ext.admin import Admin
 from admin.models import Article, Category, User
 from admin.settings import SettingsView
+from admin.gallery import GalleryView
 from admin.utils import My_ModelView, UsersView
+from flask.ext.admin.contrib import fileadmin
 
 def rel(*x):
 	return os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
@@ -37,6 +39,15 @@ admin.add_view(UsersView(
 admin.add_view(SettingsView(
 	name="Settings",
 	category='Administration')
+)
+
+admin.add_view(GalleryView(
+	name = 'Gallery'
+	)
+)
+
+admin.add_view(fileadmin.FileAdmin(
+	UPLOAD_FOLDER, '/uploads/', name='File Manager')
 )
 
 app.debug = True
