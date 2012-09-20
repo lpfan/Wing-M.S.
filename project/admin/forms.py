@@ -35,3 +35,7 @@ class RegistrationForm(wtf.Form):
         if len([u for u in User.select().where(nickname__eq=self.login)]) > 0:
             raise wtf.ValidationError('Duplicate username')
 
+class NewAlbumForm(wtf.Form):
+    title = wtf.TextField(validators=[wtf.required()])
+    description = wtf.TextAreaField()
+

@@ -12,7 +12,7 @@ def rel(*x):
 	return os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
 
 app = Flask(__name__)
-UPLOAD_FOLDER = rel('uploads')
+UPLOAD_FOLDER = os.path.join(rel('static'), 'uploads')
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 SETTINGS_PATH = rel('settings.cfg')
 

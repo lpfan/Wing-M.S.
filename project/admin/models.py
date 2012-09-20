@@ -48,7 +48,7 @@ class User(BaseModel):
 
 class Album(BaseModel):
     title = peewee.CharField(max_length=100)
-    description = peewee.TextField()
+    description = peewee.TextField(null=True)
     album_path = peewee.CharField()
 
     def get_album_thumbnail(self):

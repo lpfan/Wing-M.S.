@@ -1,0 +1,49 @@
+{% extends 'admin/master.html' %}
+
+{% block tail %}
+	{{ super() }}
+	<script type='text/javascript' src="{{url_for('static', filename='js/redactor.min.js')}}"></script>
+	<script type='text/javascript' src="{{url_for('static', filename='js/admin.js')}}"></script>
+	<link href="{{ url_for('static', filename='css/redactor.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+		<form method="POST" action="{{url_for('.new_album')}}" class="form-horizontal">
+			<legend>Новий альбом</legend>
+			{{form.csrf_token}}
+			<div class="control-group">
+				{{form.title.label(class="control-label")}}
+				<div class="controls">
+					
+					{{form.title}}
+					
+					{% if form.title.errors %}
+						<p class="muted">
+							{%for error in form.title.errors %}
+								{{error}}
+							{%endfor%}
+						</p>
+					{%endif%}
+				</div>
+			</div>
+			<div class="control-group">
+				{{form.description.label(class="control-label")}}
+				<div class="controls">
+					{{form.description}}
+
+					{% if form.description.errors %}
+						<p class="muted">
+							{%for error in form.description.errors %}
+								{{error}}
+							{%endfor%}
+						</p>
+					{%endif%}
+				</div>
+			</div>
+			<div class="control-group">
+				<div class="controls">
+					<button type="submit" class="btn">Створити</button>
+				</div>
+			</div>
+		</form>
+{%endblock%}
