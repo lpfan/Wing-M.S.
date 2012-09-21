@@ -4,6 +4,7 @@ from flask.ext.admin.contrib.peeweemodel import ModelView
 from flask.ext.wtf import SelectField
 from project.config import UPLOAD_FOLDER
 from werkzeug import secure_filename
+from hurry.filesize import size, si
 
 
 class My_ModelView(ModelView):
@@ -43,10 +44,42 @@ class GalleryManager():
         self.thumb_folder = os.path.join(UPLOAD_FOLDER, 'thumb')
 
     def create_album(self, aAlbum_title):
-        pass
-
+        album_path = os.path.join(self.pict_folder, aAlbum_title)
+        if not os.path.exists(album_path):
+            os.makedirs(album_path)
+        thumb_path = os.path.join(self.thumb_folder, aAlbum_title)
+        if not os.path.exists(thumb_path):
+            os.makedirs(thumb_path)
+        return (album_path, thumb_path,)
+    
     def add_photo(self, album, raw_file):
-        pass
+        pict_path = album.album_path
+        pict_thumb = album.thumb_path
+        pict_url = self.create_url(pict_path)
+        thumb_url = self.create_url(pict_thumb)
+        img = self.save_as_png(raw_file, pict_path=pict_path, thumb_path=pict_thumb)
+        pict_file_name = self.get_filename(img)
+        size = self.return_size(img)
+        return (
+            pict_file_name,
+            size,
+            os.path.join(pict_path,pict_file_name+'.png'),
+            pict_url + '/' + pict_file_name+'.png',
+            thumb_url + '/' + pict_file_name+'.png',
+            os.path.join(pict_thumb,pict_file_name+'.png'),
+        )
+
+    def get_filename(self, file):
+        base = os.path.basename(file.filename)
+        return secure_filename(os.path.splitext(base)[0])
+
+    def create_url(self, pict_path):
+        path = pict_path.split('/')[-3:]
+        url = '/'.join(path)
+        return url
+
+    def return_size(self, file):
+        return size(os.path.getsize(file.filename), system=si)
 
     #save all uploaded images in png 
     def save_as_png(self, img_obj, pict_path='', thumb_path=''):

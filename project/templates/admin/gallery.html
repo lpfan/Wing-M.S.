@@ -1,4 +1,22 @@
 {% extends 'admin/master.html' %}
+
+{%block head%}
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+{%endblock%}
+
 {% block body %}
+
+{%if albums%}
+
+	{%for album in albums %}
+		<a href="{{url_for('.show_album', album_id = album.id)}}" title="{{album.title}}">
+			<img class="img-polaroid" src="{{url_for('static', filename=album.get_album_thumbnail())}}" alt="" /><br />
+			{{album.title}}
+		</a>
+	{%endfor%}
+
+{%else%}
+
+{%endif%}
 
 {% endblock %}
