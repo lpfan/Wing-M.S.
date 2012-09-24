@@ -15,3 +15,11 @@
      -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
           box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
+
+.control_items_holder {
+	list-style: none;	
+}
+
+.control_items_holder li {
+	float:left;
+}

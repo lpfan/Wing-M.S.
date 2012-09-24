@@ -6,14 +6,28 @@
 
 {% block body %}
 
-{%if albums%}
+<div>
+	<a class="btn btn-primary" href="{{url_for('.new_album')}}">Додати альбом</a>
+</div>
 
+	<h3>Список альбомів</h3>
+
+{%if albums%}
+	<ul class="thumbnails">
 	{%for album in albums %}
-		<a href="{{url_for('.show_album', album_id = album.id)}}" title="{{album.title}}">
-			<img class="img-polaroid" src="{{url_for('static', filename=album.get_album_thumbnail())}}" alt="" /><br />
-			{{album.title}}
-		</a>
+  		<li class="span2">
+  			<div class="thumbnail">
+  				<a href="{{url_for('.show_album', album_id = album.id)}}" title="{{album.title}}">
+						<img class="img-polaroid" src="{{url_for('static', filename=album.get_album_thumbnail())}}" alt="" />
+				</a>
+				<h4>{{album.title}}</h4>
+				<p>
+					{{album.description|safe}}
+				</p>
+			</div>
+  		</li>
 	{%endfor%}
+	</ul>
 
 {%else%}
 

@@ -31,7 +31,7 @@ class GalleryView(BaseView):
 			album.album_path = album_path
 			album.thumb_path = album_thumb
 			album.save()
-			return redirect(url_for('.index'))
+			return redirect(url_for('.show_album', album_id=album.id))
 		return self.render('admin/new_album.html', form=form)
 
 	@expose('/show_album/<int:album_id>/', methods=('GET',))
@@ -93,3 +93,14 @@ class GalleryView(BaseView):
 				except DoesNotExist, e:
 					print '%s' % e
 		return redirect(url_for('.show_album', album_id=album_id))
+	@expose('/show_album/<int:album_id>/delete', methods=('GET',))
+	def remove_album(self, album_id=''):
+		try:
+			album = Album.get(id=album_id)
+			album.delete_instance()
+			flash(u"Альбом %s видалено успішно" % album.title)
+			return redirect(url_for('.index'))
+		except DoesNotExist:
+			print "album does not exist"
+		flash(u"Такого альбому не існує")
+		return redirect(url_for('.index'))

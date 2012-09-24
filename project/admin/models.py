@@ -54,9 +54,13 @@ class Album(BaseModel):
     thumb_path = peewee.CharField()
 
     def get_album_thumbnail(self):
-        photos = [f for f in self.photo_set]
-        thumbnail = choice(photos)
-        return thumbnail.get_thumbnail()
+        try:
+            photos = [f for f in self.photo_set]
+            thumbnail = choice(photos)
+            return thumbnail.get_thumbnail()
+        except IndexError:
+            return 'images/default_empty_album.png'
+        return 'Album is empty'
 
 class Photo(BaseModel):
     album = peewee.ForeignKeyField(Album)

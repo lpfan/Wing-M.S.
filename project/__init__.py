@@ -22,23 +22,20 @@ admin = Admin(app)
 
 admin.add_view(My_ModelView(
 	Article,
-	name="Articles",
-    category='Content')
+	name="Articles"
+	)
 )
 admin.add_view(My_ModelView(
 	Category,
-	name="Categories",
-    category='Content')
+	name="Categories")
 )
 admin.add_view(UsersView(
 	User,
-	name="Users",
-    category='Administration')
+	name="Users")
 )
 
 admin.add_view(SettingsView(
-	name="Settings",
-	category='Administration')
+	name="Settings")
 )
 
 admin.add_view(GalleryView(
