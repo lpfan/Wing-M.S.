@@ -3,6 +3,7 @@ import peewee
 from datetime import datetime as dt
 from random import choice
 from datetime import datetime as dt
+from utils import return_slug
 
 _database = peewee.MySQLDatabase('wing_cms', user='wing_user', passwd='wing_cms')
 
@@ -12,21 +13,31 @@ class BaseModel(peewee.Model):
 		database = _database
 
 class Category(BaseModel):
-	title = peewee.CharField(max_length=100)
-	text = peewee.TextField(null=True)
-	is_visible = peewee.BooleanField(default=False)
-	date = peewee.DateField(default = dt.today().date())
+    title = peewee.CharField(max_length=100)
+    text = peewee.TextField(null=True)
+    is_visible = peewee.BooleanField(default=False)
+    date = peewee.DateField(default = dt.today().date())
+    slug = peewee.CharField()
 
-	def __unicode__(self):
-		return self.title
+    def save(self):
+        self.slug  = return_slug(aTitle=self.title)
+        super(Category, self).save()
+
+    def get_permalink(self, **kwargs):
+        return '<a href="/categories/%s" title="%s">%s</a>' % (self.slug, self.title, self.title)
 
 
 class Article(BaseModel):
-	title = peewee.CharField(max_length=100)
-	category = peewee.ForeignKeyField(Category)
-	text = peewee.TextField(null=True)
-	is_visible = peewee.BooleanField(default=False)
-	date = peewee.DateField(default = dt.today().date())
+    title = peewee.CharField(max_length=100)
+    category = peewee.ForeignKeyField(Category)
+    text = peewee.TextField(null=True)
+    is_visible = peewee.BooleanField(default=False)
+    date = peewee.DateField(default = dt.today().date())
+    slug = peewee.CharField()
+
+    def save(self):
+        self.slug  = return_slug(aTitle=self.title)
+        super(Article, self).save()
 
 class User(BaseModel):
     nickname = peewee.CharField()
@@ -78,6 +89,13 @@ class Photo(BaseModel):
     def __unicode__(self):
         return self.title
 
+class MenuItem(BaseModel):
+    title = peewee.CharField()
+    url = peewee.CharField()
+
+class Menu(BaseModel):
+    title = peewee.CharField()
+    menu_item = peewee.ForeignKeyField(MenuItem, related_name="items")
 
 _database.connect()
 Article.create_table(True)
@@ -85,3 +103,5 @@ Category.create_table(True)
 User.create_table(True)
 Album.create_table(True)
 Photo.create_table(True)
+MenuItem.create_table(True)
+Menu.create_table(True)

@@ -1,12 +1,14 @@
-import os
+import os, pdb
 
 from flask import Flask
-from flask.ext.admin import Admin
+from flask.ext.admin.base import Admin
+from flask.ext.admin import expose
 from admin.models import Article, Category, User
 from admin.settings import SettingsView
 from admin.gallery import GalleryView
 from admin.utils import My_ModelView, UsersView
 from flask.ext.admin.contrib import fileadmin
+from admin.index import GeneralView
 
 def rel(*x):
 	return os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
@@ -16,9 +18,11 @@ UPLOAD_FOLDER = os.path.join(rel('static'), 'uploads')
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 SETTINGS_PATH = rel('settings.cfg')
 
-from admin.file_upload import *
+admin = Admin(index_view=GeneralView())
 
-admin = Admin(app)
+admin.init_app(app)
+
+from admin.file_upload import *
 
 admin.add_view(My_ModelView(
 	Article,
@@ -27,7 +31,8 @@ admin.add_view(My_ModelView(
 )
 admin.add_view(My_ModelView(
 	Category,
-	name="Categories")
+	name="Categories",
+	endpoint='category_mgm')
 )
 admin.add_view(UsersView(
 	User,

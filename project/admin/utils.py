@@ -5,12 +5,14 @@ from flask.ext.wtf import SelectField
 from project.config import UPLOAD_FOLDER
 from werkzeug import secure_filename
 from hurry.filesize import size, si
+from pytils.translit import slugify
 
 
 class My_ModelView(ModelView):
     edit_template = 'admin/custom_edit.html'
     create_template = 'admin/custom_create.html'
     excluded_list_columns = ('text')
+    excluded_form_columns = ('slug',)
 
 class UsersView(ModelView):
     excluded_list_columns = ('password')
@@ -99,4 +101,7 @@ class GalleryManager():
         thumb_height = int(ConfigManager().get_section_configs('ThumbnailSize')['height'])
         pil_img = pil_image.resize((thumb_width, thumb_height), Image.ANTIALIAS)
         pil_img.save(os.path.join(thumb_path or self.thumb_folder, png_pict_filename))
+
+def return_slug(aTitle=''):
+    return slugify(aTitle.lower())
 
