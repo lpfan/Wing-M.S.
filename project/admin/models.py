@@ -23,6 +23,9 @@ class Category(BaseModel):
         self.slug  = return_slug(aTitle=self.title)
         super(Category, self).save()
 
+    def __unicode__(self):
+        return self.title
+
     def get_permalink(self, **kwargs):
         return '<a href="/categories/%s" title="%s">%s</a>' % (self.slug, self.title, self.title)
 
@@ -38,6 +41,9 @@ class Article(BaseModel):
     def save(self):
         self.slug  = return_slug(aTitle=self.title)
         super(Article, self).save()
+
+    def get_permalink(self):
+        return '<a href="/articles/%s" title="%s">%s</a>' % (self.slug, self.title, self.title)
 
 class User(BaseModel):
     nickname = peewee.CharField()

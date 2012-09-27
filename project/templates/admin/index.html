@@ -31,7 +31,60 @@
             onActivate: function(node) {
                 // A DynaTreeNode object is passed to the activation handler
                 // Note: we also get this event, if persistence is on, and the page is reloaded.
-                alert("You activated " + node.data.title);
+                var node_key = node.data.key;
+                var children = node.data.children;
+                var menu = $('#menu_structure');
+                $.ajax({
+                  url:"{{url_for('.new_menu_item')}}",
+                  type:'POST',
+                  data:{
+                    key:node_key
+                  },
+                  success:function(data, textStatus, jqXHR){
+                    if (textStatus == 'success'){
+                      var new_menu_item;
+                      if (children && children.length > 0) {
+                        new_menu_item = $('<li />').prop({
+                          'class':'dropdown'
+                        })
+                        .append(
+                          $('<a />').prop({
+                            'class':'dropdown-toggle',
+                            'data-toggle':'dropdown',
+                            'href':'#'
+                          })
+                          .html(data)
+                          .append(
+                            $('<b />').addClass('caret')
+                            )
+                        );
+                        var jMenu = $('<ul />').prop({
+                          'class':'dropdown-menu'
+                        });
+                        $.each(children, function(i, val){
+                          $('<li />').append($('<a />').html(val['title'])).appendTo(jMenu);
+                        });
+                        new_menu_item.append(jMenu)
+                      } else {
+                        new_menu_item =  $('<li />')
+                          .append(
+                            $('<a />')
+                            .prop({
+                              href:'#'})
+                            .html(data)
+                          );
+                      };
+                      
+                      new_menu_item.appendTo(menu);
+                      
+                      menu
+                        .find('.dropdown-toggle').dropdown();
+
+                      return false;
+                    }
+                  }
+                });
+                
             },
             initAjax: {url: "{{url_for('.content_structure')}}"},
             persist: true,
@@ -71,7 +124,13 @@
   </div>
 </div>
 
+<div class="row">
+  <div class="span4">
+    <div id="tree"> </div>
+  </div>
 
-<div id="tree"> </div>
+  <div class="span6">
 
+  </div>
+</div>
 {% endblock %}
