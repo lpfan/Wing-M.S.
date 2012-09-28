@@ -32,7 +32,7 @@ class Category(BaseModel):
 
 class Article(BaseModel):
     title = peewee.CharField(max_length=100)
-    category = peewee.ForeignKeyField(Category)
+    category = peewee.ForeignKeyField(Category, null=True)
     text = peewee.TextField(null=True)
     is_visible = peewee.BooleanField(default=False)
     date = peewee.DateField(default = dt.today().date())
@@ -95,13 +95,10 @@ class Photo(BaseModel):
     def __unicode__(self):
         return self.title
 
-class MenuItem(BaseModel):
-    title = peewee.CharField()
-    url = peewee.CharField()
-
 class Menu(BaseModel):
     title = peewee.CharField()
-    menu_item = peewee.ForeignKeyField(MenuItem, related_name="items")
+    url = peewee.CharField()
+    template = peewee.TextField()
 
 _database.connect()
 Article.create_table(True)
@@ -109,5 +106,4 @@ Category.create_table(True)
 User.create_table(True)
 Album.create_table(True)
 Photo.create_table(True)
-MenuItem.create_table(True)
 Menu.create_table(True)

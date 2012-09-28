@@ -3,12 +3,16 @@
 {%block head %}
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/ui.dynatree.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/redactor.css') }}" rel="stylesheet">
 {%endblock%}
 {%block tail%}
+  {{super()}}
 	<script type="text/javascript" src="{{url_for('static', filename='js/bootstrap.min.js')}}"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='js/redactor.min.js')}}"></script>
   <script type="text/javascript" src="{{url_for('static', filename='js/jquery-ui.custom.min.js')}}"></script>
   <script type="text/javascript" src="{{url_for('static', filename='js/jquery.cookie.js')}}"></script>
-   <script type="text/javascript" src="{{url_for('static', filename='js/jquery.dynatree.min.js')}}"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='js/jquery.dynatree.min.js')}}"></script>
+   <script type="text/javascript" src="{{url_for('static', filename='js/jquery.form.js')}}"></script>
 	<script type="text/javascript">
 		$(document).ready(function(){
       $('#myTab a:first').tab('show');
@@ -32,58 +36,61 @@
                 // A DynaTreeNode object is passed to the activation handler
                 // Note: we also get this event, if persistence is on, and the page is reloaded.
                 var node_key = node.data.key;
+                var node_url = node.data.href;
+                var node_title = node.data.title;
                 var children = node.data.children;
                 var menu = $('#menu_structure');
-                $.ajax({
-                  url:"{{url_for('.new_menu_item')}}",
-                  type:'POST',
-                  data:{
-                    key:node_key
-                  },
-                  success:function(data, textStatus, jqXHR){
-                    if (textStatus == 'success'){
-                      var new_menu_item;
-                      if (children && children.length > 0) {
-                        new_menu_item = $('<li />').prop({
-                          'class':'dropdown'
-                        })
-                        .append(
-                          $('<a />').prop({
-                            'class':'dropdown-toggle',
-                            'data-toggle':'dropdown',
-                            'href':'#'
-                          })
-                          .html(data)
-                          .append(
-                            $('<b />').addClass('caret')
-                            )
-                        );
-                        var jMenu = $('<ul />').prop({
-                          'class':'dropdown-menu'
-                        });
-                        $.each(children, function(i, val){
-                          $('<li />').append($('<a />').html(val['title'])).appendTo(jMenu);
-                        });
-                        new_menu_item.append(jMenu)
-                      } else {
-                        new_menu_item =  $('<li />')
-                          .append(
-                            $('<a />')
-                            .prop({
-                              href:'#'})
-                            .html(data)
-                          );
-                      };
-                      
-                      new_menu_item.appendTo(menu);
-                      
-                      menu
-                        .find('.dropdown-toggle').dropdown();
+                var templateText = $('#itemTemplateText');
 
-                      return false;
-                    }
-                  }
+                var inputItemTitle = $('#inputItemTitle');
+                var inputItemUrl = $('#inputItemUrl');
+
+                inputItemTitle.prop({
+                  value:node_title
                 });
+
+                inputItemUrl.prop({
+                  value:node_url
+                });
+
+                var tmplText = '';
+
+                var childrenList = $('#js_children_list');
+                //clear childList
+                childrenList.html('');
+
+                if(children && children.length > 0){
+                  var mainTab = $('#main');
+                  tmplText = '<li><a href="' + node_url + '" title="' + node_title +'">' + node_title + '</a>\n<ul>';
+                  $.each(children, function(i, val){
+                    tmplText += '\n\t<li>\n\t\t<a href="' + val.href + '" title="' + val.title +'">' + val.title + '</a>\n\t</li>';
+                    //generate children inputs
+                    var childInput = $('<input />')
+                      .prop({
+                        type:'text',
+                        id:'js_childItem_'+val.title+'_'+i,
+                        value:val.title
+                      })
+                      .appendTo(
+                        $('<div />').addClass('controls')
+                      );
+                    var childLabel = $('<label />')
+                      .prop({
+                        class:'control-label',
+                        for:'js_childItem_'+val.title+'_'+i
+                      })
+                      .text('Назва');
+                    childrenList.append(childLabel);
+                    $('<div />').addClass('controls')
+                      .append(childInput)
+                        .appendTo(childrenList);
+                  });
+                  tmplText += '\n</ul>\n</li>';
+                } else {
+                  tmplText = '<li><a href="' + node_url + '" title="' + node_title +'">' + node_title + '</a></li>';
+                };
+
+                templateText.text(tmplText);
                 
             },
             initAjax: {url: "{{url_for('.content_structure')}}"},
@@ -100,11 +107,20 @@
                 {title: "Item 3"}
             ]
             */
+            
         });
+        
+        //$('#itemTemplateText').redactor();
 
+        $('#js_newItemSource').ajaxForm({
+          beforeSubmit : correctItemTemplate
+        })
+		});
 
-
-		})
+    function correctItemTemplate (formData, jqForm, options){
+      console.log('before submit fired up');
+      return true;
+    }
 	</script>
 {%endblock%}
 
@@ -129,8 +145,60 @@
     <div id="tree"> </div>
   </div>
 
-  <div class="span6">
+  <div class="span8">
+    <div id="item_options">
+      <form id="js_newItemSource" action="{{url_for('.new_menu_item')}}" method="POST" class="form-inline">
+        <legend>
+           Параметри нового пункту меню
+        </legend>
+        <ul class="nav nav-tabs" id="myTab">
+          <li class="active"><a href="#main">Основні параметри</a></li>
+          <li><a href="#additionals">Додатково</a></li>
+        </ul>
 
+        <div class="tab-content">
+          <div class="tab-pane active" id="main">
+            
+            <div class="control-group">
+              <label class="control-label" for="inputItemTitle">Назва</label>
+              <div class="controls">
+                <input name="itemTitle" type="text" id="inputItemTitle">
+              </div>
+            </div>
+            
+            <div class="control-group">
+              <label class="control-label" for="inputItemUrl">url</label>
+              <div class="controls">
+                <input name="itemUrl" type="text" id="inputItemUrl">
+              </div>
+            </div>
+
+            <legend>
+              Підпункти
+            </legend>
+            <div id="js_children_list" class="control-group">
+
+            </div>
+          </div>
+          <div class="tab-pane" id="additionals">
+            <div class="control-group">
+              <label class="control-label" for="itemTemplateText">Шаблон</label>
+              <div class="controls">
+                <textarea name="itemTemplate" id="itemTemplateText"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="controls">
+            <button class="btn btn-danger">скасувати</button>
+            <input class="btn btn-primary" type="submit" value="Додати" />
+          </div>
+        </div>
+
+      </form>
+    </div>
   </div>
 </div>
 {% endblock %}
