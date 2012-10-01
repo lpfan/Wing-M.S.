@@ -23,6 +23,7 @@ admin = Admin(index_view=GeneralView())
 admin.init_app(app)
 
 from admin.file_upload import *
+from frontend.controllers import index
 
 admin.add_view(My_ModelView(
 	Article,
