@@ -29,6 +29,9 @@ class Category(BaseModel):
     def get_permalink(self, **kwargs):
         return '<a href="/categories/%s" title="%s">%s</a>' % (self.slug, self.title, self.title)
 
+    def get_link(self):
+        return '/categories/%s' % self.slug
+
 
 class Article(BaseModel):
     title = peewee.CharField(max_length=100)
@@ -44,6 +47,9 @@ class Article(BaseModel):
 
     def get_permalink(self):
         return '<a href="/articles/%s" title="%s">%s</a>' % (self.slug, self.title, self.title)
+
+    def get_link(self):
+        return '/categories/%s/articles/%s' % (self.category.id, self.slug)
 
 class User(BaseModel):
     nickname = peewee.CharField()
@@ -99,6 +105,7 @@ class Menu(BaseModel):
     title = peewee.CharField()
     url = peewee.CharField()
     template = peewee.TextField()
+    utility_template = peewee.TextField()
 
 _database.connect()
 Article.create_table(True)

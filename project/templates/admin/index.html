@@ -28,8 +28,13 @@
 				return false;
 			})
 
-      $('.dropdown-toggle').dropdown();
+      var itemMenuHolder;
+      var itemMenuTitle;
+      var menu = $('#menu_structure');
 
+      menu
+        .find('.dropdown-toggle')
+          .dropdown();
 
       $("#tree").dynatree({
             onActivate: function(node) {
@@ -39,8 +44,12 @@
                 var node_url = node.data.href;
                 var node_title = node.data.title;
                 var children = node.data.children;
-                var menu = $('#menu_structure');
+                
                 var templateText = $('#itemTemplateText');
+                var itemUtilityTemplate = $('#itemUtilityTemplateText');
+
+                templateText.val('');
+                itemUtilityTemplate.val('');
 
                 var inputItemTitle = $('#inputItemTitle');
                 var inputItemUrl = $('#inputItemUrl');
@@ -59,9 +68,25 @@
                 //clear childList
                 childrenList.html('');
 
+                itemMenuHolder = $('<li />').addClass('dropdown');
+
+                itemMenuTitle = $('<a />')
+                  .prop({
+                    href:'#',
+                    class:'dropdown-toggle'
+                  })
+                  .html(node_title);
+
+                itemMenuHolder.append(itemMenuTitle);
+
                 if(children && children.length > 0){
                   var mainTab = $('#main');
                   tmplText = '<li><a href="' + node_url + '" title="' + node_title +'">' + node_title + '</a>\n<ul>';
+
+                  var ddMenu = $('<ul />')
+                      .addClass('dropdown-menu')
+                      .prop('role', 'menu');
+
                   $.each(children, function(i, val){
                     tmplText += '\n\t<li>\n\t\t<a href="' + val.href + '" title="' + val.title +'">' + val.title + '</a>\n\t</li>';
                     //generate children inputs
@@ -84,13 +109,26 @@
                     $('<div />').addClass('controls')
                       .append(childInput)
                         .appendTo(childrenList);
+
+                    var ddMenuItem = $('<a />')
+                      .prop({
+                        href:'#'
+                      })
+                      .html(val.title);
+                    
+                    ddMenuItem = $('<li />').append(ddMenuItem);
+
+                    ddMenuItem.appendTo(ddMenu);
+
                   });
                   tmplText += '\n</ul>\n</li>';
+                  itemMenuHolder.append(ddMenu);
                 } else {
                   tmplText = '<li><a href="' + node_url + '" title="' + node_title +'">' + node_title + '</a></li>';
                 };
 
-                templateText.text(tmplText);
+                templateText.val(tmplText);
+                itemUtilityTemplate.val(itemMenuHolder.html());
                 
             },
             initAjax: {url: "{{url_for('.content_structure')}}"},
@@ -113,14 +151,23 @@
         //$('#itemTemplateText').redactor();
 
         $('#js_newItemSource').ajaxForm({
-          beforeSubmit : correctItemTemplate
+          beforeSubmit : correctItemTemplate,
+          success: updateConstructorMenu
         })
-		});
 
-    function correctItemTemplate (formData, jqForm, options){
-      console.log('before submit fired up');
-      return true;
-    }
+        function correctItemTemplate (formData, jqForm, options){
+          return true;
+        }
+
+        function updateConstructorMenu(responseText, statusText, xhr, $form){
+          menu
+            .append(itemMenuHolder);
+          menu
+            .find('.dropdown-toggle')
+              .dropdown();
+        }
+
+		});
 	</script>
 {%endblock%}
 
@@ -133,7 +180,7 @@
     {%if menu %}
     <ul id="menu_structure" class="nav">
     	{% for m in menu %}
-      <li><a href="#">{{m.title}}</a></li>
+      <li class="dropdown">{{m.utility_template|safe}}</li>
       {%endfor%}
     </ul>
     {%endif%}
@@ -185,6 +232,7 @@
               <label class="control-label" for="itemTemplateText">Шаблон</label>
               <div class="controls">
                 <textarea name="itemTemplate" id="itemTemplateText"></textarea>
+                <textarea name="itemUtilityTemplate" id="itemUtilityTemplateText" style="display:none;"></textarea>
               </div>
             </div>
           </div>

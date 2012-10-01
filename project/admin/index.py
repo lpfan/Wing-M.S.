@@ -10,7 +10,7 @@ from flask.ext.admin.base import AdminIndexView
 class GeneralView(AdminIndexView):
     @expose('/')
     def index(self):
-    	menu = None
+    	menu = Menu.select()
     	categories = Category.select()
         return self.render('admin/index.html', categories=categories, menu=menu)
 
@@ -23,14 +23,14 @@ class GeneralView(AdminIndexView):
     		if articles.count() > 0:
     			children.append({
     				'title':category.title,
+                    'href':category.get_link(),
     				'isFolder': 'true',
-                    'key':pickle.dumps(category),
     				'children':self.get_children(articles)
     				})
     		else:	
     			children.append({
                     'title':category.title,
-                    'key':pickle.dumps(category)
+                    'href':category.get_link()
                     })
         for article in Article.select().where(category__is=None):
             children.append({
@@ -52,16 +52,19 @@ class GeneralView(AdminIndexView):
         itemTitle = form.get('itemTitle', None)
         itemUrl = form.get('itemUrl', None)
         itemTemplate = form.get('itemTemplate', None)
+        itemUtilityTemplate = form.get('itemUtilityTemplate', None)
         menu = Menu()
         menu.title = itemTitle
         menu.url = itemUrl
         menu.template = itemTemplate
+        menu.utility_template = itemUtilityTemplate
+        status = None
         try:
-            flash(u'Новий пункт меню успішно збережений')
+            status = u'Новий пункт меню успішно збережений'
             menu.save()
         except Exception, e:
-            flash(u'Помилка під час зберігання')
-        return 'done'
+            status = u'Помилка під час зберігання'
+        return Response(status)
 
     def get_children(self, children_set):
     	result = []
@@ -69,6 +72,6 @@ class GeneralView(AdminIndexView):
             result.append({
                     'title':child.title,
                     'key':"%s" % pickle.dumps(child),
-                    'href':child.slug
+                    'href':child.get_link()
                 })
         return result
