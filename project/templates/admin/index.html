@@ -36,6 +36,11 @@
         .find('.dropdown-toggle')
           .dropdown();
 
+      $('#myTab a').click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+      });
+
       $("#tree").dynatree({
             onActivate: function(node) {
                 // A DynaTreeNode object is passed to the activation handler
@@ -173,80 +178,95 @@
 
 {% block body %}
 
-<div class="navbar">
-  <h4>Конструктор головного меню</h4>
-  <div class="navbar-inner">
-    <a class="brand" href="#">Головне меню</a>
-    {%if menu %}
-    <ul id="menu_structure" class="nav">
-    	{% for m in menu %}
-      <li class="dropdown">{{m.utility_template|safe}}</li>
-      {%endfor%}
-    </ul>
-    {%endif%}
-  </div>
-</div>
-
-<div class="row">
-  <div class="span4">
-    <div id="tree"> </div>
-  </div>
-
-  <div class="span8">
-    <div id="item_options">
-      <form id="js_newItemSource" action="{{url_for('.new_menu_item')}}" method="POST" class="form-inline">
-        <legend>
-           Параметри нового пункту меню
-        </legend>
-        <ul class="nav nav-tabs" id="myTab">
-          <li class="active"><a href="#main">Основні параметри</a></li>
-          <li><a href="#additionals">Додатково</a></li>
+<ul class="nav nav-tabs" id="myTab">
+  <li class="active"><a href="#menu_settings">Налаштування головного меню</a></li>
+  <li><a href="#profile">Profile</a></li>
+  <li><a href="#messages">Messages</a></li>
+  <li><a href="#settings">Settings</a></li>
+</ul>
+ 
+<div class="tab-content">
+  <div class="tab-pane active" id="menu_settings">
+    <div class="navbar">
+      <h4>Конструктор головного меню</h4>
+      <div class="navbar-inner">
+        <a class="brand" href="#">Головне меню</a>
+        {%if menu %}
+        <ul id="menu_structure" class="nav">
+          {% for m in menu %}
+          <li class="dropdown">{{m.utility_template|safe}}</li>
+          {%endfor%}
         </ul>
+        {%endif%}
+      </div>
+    </div>
 
-        <div class="tab-content">
-          <div class="tab-pane active" id="main">
-            
-            <div class="control-group">
-              <label class="control-label" for="inputItemTitle">Назва</label>
-              <div class="controls">
-                <input name="itemTitle" type="text" id="inputItemTitle">
-              </div>
-            </div>
-            
-            <div class="control-group">
-              <label class="control-label" for="inputItemUrl">url</label>
-              <div class="controls">
-                <input name="itemUrl" type="text" id="inputItemUrl">
-              </div>
-            </div>
+    <div class="row">
+      <div class="span4">
+        <div id="tree"> </div>
+      </div>
 
+      <div class="span8">
+        <div id="item_options">
+          <form id="js_newItemSource" action="{{url_for('.new_menu_item')}}" method="POST" class="form-inline">
             <legend>
-              Підпункти
+               Параметри нового пункту меню
             </legend>
-            <div id="js_children_list" class="control-group">
+            <ul class="nav nav-tabs" id="myTab">
+              <li class="active"><a href="#main">Основні параметри</a></li>
+              <li><a href="#additionals">Додатково</a></li>
+            </ul>
 
-            </div>
-          </div>
-          <div class="tab-pane" id="additionals">
-            <div class="control-group">
-              <label class="control-label" for="itemTemplateText">Шаблон</label>
-              <div class="controls">
-                <textarea name="itemTemplate" id="itemTemplateText"></textarea>
-                <textarea name="itemUtilityTemplate" id="itemUtilityTemplateText" style="display:none;"></textarea>
+            <div class="tab-content">
+              <div class="tab-pane active" id="main">
+                
+                <div class="control-group">
+                  <label class="control-label" for="inputItemTitle">Назва</label>
+                  <div class="controls">
+                    <input name="itemTitle" type="text" id="inputItemTitle">
+                  </div>
+                </div>
+                
+                <div class="control-group">
+                  <label class="control-label" for="inputItemUrl">url</label>
+                  <div class="controls">
+                    <input name="itemUrl" type="text" id="inputItemUrl">
+                  </div>
+                </div>
+
+                <legend>
+                  Підпункти
+                </legend>
+                <div id="js_children_list" class="control-group">
+
+                </div>
+              </div>
+              <div class="tab-pane" id="additionals">
+                <div class="control-group">
+                  <label class="control-label" for="itemTemplateText">Шаблон</label>
+                  <div class="controls">
+                    <textarea name="itemTemplate" id="itemTemplateText"></textarea>
+                    <textarea name="itemUtilityTemplate" id="itemUtilityTemplateText" style="display:none;"></textarea>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <div class="control-group">
-          <div class="controls">
-            <button class="btn btn-danger">скасувати</button>
-            <input class="btn btn-primary" type="submit" value="Додати" />
-          </div>
-        </div>
+            <div class="control-group">
+              <div class="controls">
+                <button class="btn btn-danger">скасувати</button>
+                <input class="btn btn-primary" type="submit" value="Додати" />
+              </div>
+            </div>
 
-      </form>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
+  <div class="tab-pane" id="profile">...</div>
+  <div class="tab-pane" id="messages">...</div>
+  <div class="tab-pane" id="settings">...</div>
 </div>
+
 {% endblock %}

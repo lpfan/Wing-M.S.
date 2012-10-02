@@ -38,6 +38,7 @@ class Article(BaseModel):
     category = peewee.ForeignKeyField(Category, null=True)
     text = peewee.TextField(null=True)
     is_visible = peewee.BooleanField(default=False)
+    is_index = peewee.BooleanField(default=False, unique = True)
     date = peewee.DateField(default = dt.today().date())
     slug = peewee.CharField()
 
