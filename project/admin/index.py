@@ -17,7 +17,7 @@ class GeneralView(AdminIndexView):
     @expose('/content_structure')
     def content_structure(self):
     	children = []
-    	categories = Category.select()
+    	categories = Category.filter(is_visible=True)
     	for category in categories:
     		articles = category.article_set
     		if articles.count() > 0:
@@ -34,7 +34,7 @@ class GeneralView(AdminIndexView):
                     'href':category.get_link(),
                     'key':category.get_config_link()
                     })
-        for article in Article.select().where(category__is=None):
+        for article in Article.filter(is_visible=True).where(category__is=None):
             children.append({
                 'title':article.title,
                 'href':article.get_link(),

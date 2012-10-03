@@ -16,7 +16,12 @@
 
   function admin_item_config_handler(e){
     e.preventDefault();
+    var jThis = $(this);
     var modal = $('#myModal');
+    var form = $('#js_menuItem_settings')
+    form.prop({
+      action:jThis.prop('href')
+    })
     modal.modal('show');
     return false;
   }
@@ -118,18 +123,6 @@
             ).appendTo(ddMenu);
           });
         }
-        ddMenu.append($('<li />').addClass('divider'));
-        //
-        $('<li />')
-          .append(
-            $('<a />')
-              .prop({
-                class:'edit_btn js_edit_admin_menu_item',
-                href:node_key
-              })
-              .html('edit')
-          )
-          .appendTo(ddMenu);
         var tmpl = ddTitle.prop('outerHTML') + ddMenu.prop('outerHTML');
         return tmpl;
       }
@@ -210,7 +203,13 @@
         {%if menu %}
         <ul id="menu_structure" class="nav">
           {% for m in menu %}
-          <li class="dropdown">{{m.utility_template|safe}}</li>
+            <li class="dropdown">
+              {{m.utility_template|safe}}
+              <ul class="dropdown-menu">
+                <li class="divider"></li>
+                <a href="/config_menu_items/{{m.id}}" title="">edit</a> 
+              </ul>
+            </li>
           {%endfor%}
         </ul>
         {%endif%}
@@ -279,7 +278,18 @@
               <h3 id="myModalLabel">Параметри пункта меню</h3>
             </div>
             <div class="modal-body">
-              
+              <form id="js_menuItem_settings" method="POST">
+
+                 <div class="control-group">
+                  <label class="control-label" for="menuItemTitle">Email</label>
+                    <div class="controls">
+                      <input type="text" name="itemTitle" id="menuItemTitle" />
+                    </div>
+                </div>
+
+                <input type="submit" class="btn btn-primary" value="Зберегти" />
+
+              </form>
             </div>
             <div class="modal-footer">
               <button data-dismiss="modal" class="btn">Закрити</button>
