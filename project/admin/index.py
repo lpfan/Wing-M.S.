@@ -24,30 +24,26 @@ class GeneralView(AdminIndexView):
     			children.append({
     				'title':category.title,
                     'href':category.get_link(),
+                    'key': category.get_config_link(),
     				'isFolder': 'true',
     				'children':self.get_children(articles)
     				})
     		else:	
     			children.append({
                     'title':category.title,
-                    'href':category.get_link()
+                    'href':category.get_link(),
+                    'key':category.get_config_link()
                     })
         for article in Article.select().where(category__is=None):
             children.append({
-                'title':article.title
+                'title':article.title,
+                'href':article.get_link(),
+                'key':article.get_config_link()
             })
     	return json.dumps(children)
 
     @expose('/new_menu_item', methods=('POST','GET'))
     def new_menu_item(self):
-        '''
-        obj = pickle.loads(str(request.form['key']))
-        set_name = obj._meta.reverse_relations.keys()[0]
-        rel_set = getattr(obj, set_name)
-        pdb.set_trace()
-        #print obj.title
-        return obj.title
-        '''
         form = request.form
         itemTitle = form.get('itemTitle', None)
         itemUrl = form.get('itemUrl', None)
@@ -71,7 +67,7 @@ class GeneralView(AdminIndexView):
     	for child in children_set:
             result.append({
                     'title':child.title,
-                    'key':"%s" % pickle.dumps(child),
-                    'href':child.get_link()
+                    'href':child.get_link(),
+                    'key':child.get_config_link()
                 })
         return result

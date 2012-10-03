@@ -33,8 +33,128 @@
 <![endif]-->
 </head>
 <body id="page1">
+<div class="body1">
+    <div class="body2">
+        <div class="main">
+<!-- header -->
+            <header>
+                <div class="wrapper">
+                    <h1><a href="index.html" id="logo">Автоворота</a></h1>
+                    <div class="right">
+                        <nav>
+                            <ul id="top_nav">
+                                <li><a href="#">Карта сайту</a></li>
+                            </ul>
+                            <form id="search" method="post">
+                                <div>
+                                    <input type="submit" class="submit" value="">
+                                    <input type="text" class="input">
+                                </div>
+                            </form>
+                        </nav>
+                    </div>
+                </div>
+                <nav id="menu">
+                    {% if menu %}
+                    <ul> 
+                        {%for m in menu %}
+                            {{m.template|safe}}
+                        {%endfor%}
+                    </ul>
+                    {%else%}
+                        створіть меню
+                    {%endif%}
+                </nav>
+            </header>
+            </div>
+        </div>
+    </div>
+    <div class="body3">
+        <div class="body4">
+            <div class="main">
+                <div class="slogan">
+                    <div id="slider">
+                        <img src="{{url_for('static', filename='images/text1.jpg')}}" alt="">   
+                        <img src="{{url_for('static', filename='images/text2.jpg')}}" alt="">   
+                        <img src="{{url_for('static', filename='images/text3.jpg')}}" alt="">               
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- / header -->
+<!-- content -->
     {%block body %}
 
     {%endblock%}
+<!-- footer -->
+    <div class="body8">
+    <div class="body9">
+        <div class="main">
+            <footer>
+                <div class="col_1">
+                    <h3>Social Networks</h3>
+                    <ul class="list3">
+                        <li><a href="#">Twitter</a></li>
+                        <li><a href="#">Facebook</a></li>
+                        <li><a href="#">Flickr</a></li>
+                        <li><a href="#">Blogger</a></li>
+                    </ul>
+                </div>
+                <div class="col_2 pad_left1">
+                    <h3>Quick Solutions</h3>
+                    <div class="wrapper">
+                        <ul class="list3 col_1">
+                            <li><a href="#">Management Consulting</a></li>
+                            <li><a href="#">Policy and Regulatory</a></li>
+                            <li><a href="#">Market Assessment</a></li>
+                            <li><a href="#">Program Management</a></li>
+                        </ul>
+                        <ul class="list3 col_1 pad_left1">
+                            <li><a href="#">Regulatory Support</a></li>
+                            <li><a href="#">Risk Assessment</a></li>
+                            <li><a href="#">Change Management</a></li>
+                            <li><a href="#">Info Technology</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col_3">
+                    <a href="index.html" id="footer_logo">First</a>
+                    <p class="center"><a rel="nofollow" href="http://www.templatemonster.com/" target="_blank">Website template</a><br>
+                            designed by TemplateMonster.com</p>
+                    <p class="center">
+                            <a href="http://www.templates.com/product/3d-models/" target="_blank">3D Models</a><br>
+                            provided by Templates.com</p>
+                </div>
+            </footer>
+        </div>
+<!-- / footer -->
+    </div>
+</div>
+<script type="text/javascript">
+    $(window).load(function() {
+    $('#slider').nivoSlider({
+        effect:'sliceDown', //Specify sets like: 'fold,fade,sliceDown, sliceDownLeft, sliceUp, sliceUpLeft, sliceUpDown, sliceUpDownLeft'    
+        slices:20,
+        animSpeed:300,
+        pauseTime:9999999999,
+        startSlide:0, //Set starting Slide (0 index)
+        directionNav:true, //Next & Prev
+        directionNavHide:false, //Only show on hover
+        controlNav:false, //1,2,3...
+        controlNavThumbs:false, //Use thumbnails for Control Nav
+        controlNavThumbsFromRel:false, //Use image rel for thumbs
+        controlNavThumbsSearch: '.jpg', //Replace this with...
+        controlNavThumbsReplace: '_thumb.jpg', //...this in thumb Image src
+        keyboardNav:true, //Use left & right arrows
+        pauseOnHover:true, //Stop animation while hovering
+        manualAdvance:false, //Force manual transitions
+        captionOpacity:1, //Universal caption opacity
+        beforeChange: function(){},
+        afterChange: function(){},
+        slideshowEnd: function(){} //Triggers after all slides have been shown
+    });
+    });
+</script>
 </body>
 </html>

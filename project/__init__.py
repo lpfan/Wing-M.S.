@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os, pdb
 
 from flask import Flask
@@ -27,12 +29,12 @@ from frontend.controllers import index
 
 admin.add_view(My_ModelView(
     Article,
-    name="Articles"
+    name=u"Сторінки"
     )
 )
 admin.add_view(My_ModelView(
     Category,
-    name="Categories",
+    name=u"Розділи",
     endpoint='category_mgm')
 )
 admin.add_view(UsersView(

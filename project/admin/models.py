@@ -32,6 +32,9 @@ class Category(BaseModel):
     def get_link(self):
         return '/categories/%s' % self.slug
 
+    def get_config_link(self):
+        return '/config/categories/%s' %self.id
+
 
 class Article(BaseModel):
     title = peewee.CharField(max_length=100)
@@ -50,7 +53,11 @@ class Article(BaseModel):
         return '<a href="/articles/%s" title="%s">%s</a>' % (self.slug, self.title, self.title)
 
     def get_link(self):
-        return '/categories/%s/articles/%s' % (self.category.id, self.slug)
+        url = '/categories/%s/articles/%s' % (self.category.id, self.slug) if self.category else '/%s' % self.slug
+        return url
+
+    def get_config_link(self):
+        return '/config/articles/%s' % self.id
 
 class User(BaseModel):
     nickname = peewee.CharField()

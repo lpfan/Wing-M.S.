@@ -3,34 +3,41 @@
 {%block head %}
     <link href="{{ url_for('static', filename='css/style_admin.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/ui.dynatree.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/redactor.css') }}" rel="stylesheet">
 {%endblock%}
 {%block tail%}
   {{super()}}
 	<script type="text/javascript" src="{{url_for('static', filename='js/bootstrap.min.js')}}"></script>
-  <script type="text/javascript" src="{{url_for('static', filename='js/redactor.min.js')}}"></script>
   <script type="text/javascript" src="{{url_for('static', filename='js/jquery-ui.custom.min.js')}}"></script>
   <script type="text/javascript" src="{{url_for('static', filename='js/jquery.cookie.js')}}"></script>
   <script type="text/javascript" src="{{url_for('static', filename='js/jquery.dynatree.min.js')}}"></script>
    <script type="text/javascript" src="{{url_for('static', filename='js/jquery.form.js')}}"></script>
 	<script type="text/javascript">
+
+
+  function admin_item_config_handler(e){
+    e.preventDefault();
+    var modal = $('#myModal');
+    modal.modal('show');
+    return false;
+  }
+
 		$(document).ready(function(){
-      $('#myTab a:first').tab('show');
-			
       $('#myTab a').click(function (e) {
         e.preventDefault();
         $(this).tab('show');
-      })
-
-      $('#js_add_new_menu_item').bind('click', function(e){
-				e.preventDefault();
-				$('#myModal').modal('show');
-				return false;
-			})
+      });
 
       var itemMenuHolder;
       var itemMenuTitle;
       var menu = $('#menu_structure');
+      //
+      var inputItemTitle = $('#inputItemTitle');
+      var inputItemUrl = $('#inputItemUrl');
+      //
+      var nodeParams;
+      //
+      var templateText = $('#itemTemplateText');
+      var itemUtilityTemplate = $('#itemUtilityTemplateText');
 
       menu
         .find('.dropdown-toggle')
@@ -42,135 +49,144 @@
       });
 
       $("#tree").dynatree({
-            onActivate: function(node) {
-                // A DynaTreeNode object is passed to the activation handler
-                // Note: we also get this event, if persistence is on, and the page is reloaded.
-                var node_key = node.data.key;
-                var node_url = node.data.href;
-                var node_title = node.data.title;
-                var children = node.data.children;
-                
-                var templateText = $('#itemTemplateText');
-                var itemUtilityTemplate = $('#itemUtilityTemplateText');
-
-                templateText.val('');
-                itemUtilityTemplate.val('');
-
-                var inputItemTitle = $('#inputItemTitle');
-                var inputItemUrl = $('#inputItemUrl');
-
-                inputItemTitle.prop({
-                  value:node_title
-                });
-
-                inputItemUrl.prop({
-                  value:node_url
-                });
-
-                var tmplText = '';
-
-                var childrenList = $('#js_children_list');
-                //clear childList
-                childrenList.html('');
-
-                itemMenuHolder = $('<li />').addClass('dropdown');
-
-                itemMenuTitle = $('<a />')
-                  .prop({
-                    href:'#',
-                    class:'dropdown-toggle'
-                  })
-                  .html(node_title);
-
-                itemMenuHolder.append(itemMenuTitle);
-
-                if(children && children.length > 0){
-                  var mainTab = $('#main');
-                  tmplText = '<li><a href="' + node_url + '" title="' + node_title +'">' + node_title + '</a>\n<ul>';
-
-                  var ddMenu = $('<ul />')
-                      .addClass('dropdown-menu')
-                      .prop('role', 'menu');
-
-                  $.each(children, function(i, val){
-                    tmplText += '\n\t<li>\n\t\t<a href="' + val.href + '" title="' + val.title +'">' + val.title + '</a>\n\t</li>';
-                    //generate children inputs
-                    var childInput = $('<input />')
-                      .prop({
-                        type:'text',
-                        id:'js_childItem_'+val.title+'_'+i,
-                        value:val.title
-                      })
-                      .appendTo(
-                        $('<div />').addClass('controls')
-                      );
-                    var childLabel = $('<label />')
-                      .prop({
-                        class:'control-label',
-                        for:'js_childItem_'+val.title+'_'+i
-                      })
-                      .text('Назва');
-                    childrenList.append(childLabel);
-                    $('<div />').addClass('controls')
-                      .append(childInput)
-                        .appendTo(childrenList);
-
-                    var ddMenuItem = $('<a />')
-                      .prop({
-                        href:'#'
-                      })
-                      .html(val.title);
-                    
-                    ddMenuItem = $('<li />').append(ddMenuItem);
-
-                    ddMenuItem.appendTo(ddMenu);
-
-                  });
-                  tmplText += '\n</ul>\n</li>';
-                  itemMenuHolder.append(ddMenu);
-                } else {
-                  tmplText = '<li><a href="' + node_url + '" title="' + node_title +'">' + node_title + '</a></li>';
-                };
-
-                templateText.val(tmplText);
-                itemUtilityTemplate.val(itemMenuHolder.html());
-                
-            },
-            initAjax: {url: "{{url_for('.content_structure')}}"},
-            persist: true,
-            /*
-            children: [ // Pass an array of nodes.
-                {title: "Item 1"},
-                {title: "Folder 2", isFolder: true,
-                    children: [
-                        {title: "Sub-item 2.1"},
-                        {title: "Sub-item 2.2"}
-                    ]
-                },
-                {title: "Item 3"}
-            ]
-            */
-            
-        });
+        onActivate: function(node) {
+          // get params of clicked node
+          nodeParams = {
+            'node_title' : node.data.title,
+            'node_url' : node.data.href,
+            'children' : node.data.children,
+            'node_key' : node.data.key
+          };
+          inputItemTitle.val(nodeParams.node_title);
+          inputItemUrl.val(nodeParams.node_url);
+          //
+          return;
+        },
+        initAjax: {url: "{{url_for('.content_structure')}}"},
+        persist: true,
+      });
         
         //$('#itemTemplateText').redactor();
 
-        $('#js_newItemSource').ajaxForm({
-          beforeSubmit : correctItemTemplate,
-          success: updateConstructorMenu
-        })
+      function createPublicTemplate(node_title, node_url, node_children){
+        var item = '';
+        if (node_children && node_children.length > 0){
+          var jHolder = $('<ul />');
+          var jLi = $('<li />');
+          $.each(node_children, function(i, val){
+            jLi.clone().append(
+              $('<a />')
+                .prop({
+                  href:val.href
+                })
+                .html(val.title)
+                ).appendTo(jHolder);
+          });
+          item = '<li>' + 
+                    '<a href="' + node_url + '" title="' + node_title +'">' + node_title + '</a>' + 
+                    jHolder.prop('outerHTML') + 
+                '</li>';
+          return item;
+        } 
+        item = '<li><a href="' + node_url + '" title="' + node_title +'">' + node_title + '</a></li>';
+        return item
+      }
 
-        function correctItemTemplate (formData, jqForm, options){
-          return true;
+      function createAdminTemplate(node_title, node_url, node_key, node_children){
+        var ddMenu = $('<ul />')
+          .addClass('dropdown-menu')
+          .prop('role', 'menu');
+        var ddTitle = $('<a />')
+          .prop({
+            class:'dropdown-toggle',
+            href:'#'
+          })
+          .html(node_title)
+          .append(
+            $('<b />').addClass('caret')
+          );
+
+        if (node_children && node_children.length > 0){
+          $.each(node_children, function(i, val){
+            $('<li />').append(
+              $('<a />')
+                .prop({
+                  href:val.key,
+                  class:'js_menu_item_child'
+                })
+                .html(val.title)
+            ).appendTo(ddMenu);
+          });
+        }
+        ddMenu.append($('<li />').addClass('divider'));
+        //
+        $('<li />')
+          .append(
+            $('<a />')
+              .prop({
+                class:'edit_btn js_edit_admin_menu_item',
+                href:node_key
+              })
+              .html('edit')
+          )
+          .appendTo(ddMenu);
+        var tmpl = ddTitle.prop('outerHTML') + ddMenu.prop('outerHTML');
+        return tmpl;
+      }
+
+      function createMenuTemplate(nodeParams){
+        //
+        var newMenuItem = {
+          'publicItem': '',
+          'adminItem' : ''
         }
 
-        function updateConstructorMenu(responseText, statusText, xhr, $form){
-          menu
-            .append(itemMenuHolder);
-          menu
-            .find('.dropdown-toggle')
-              .dropdown();
+        //check if node has children
+        if (nodeParams.children && nodeParams.children.length > 0){
+          newMenuItem.publicItem = createPublicTemplate(
+            nodeParams.node_title,
+            nodeParams.node_url,
+            nodeParams.children
+          );
+          newMenuItem.adminItem = createAdminTemplate(
+            nodeParams.node_title,
+            nodeParams.node_url,
+            nodeParams.node_key,
+            nodeParams.children
+          );
+        }else{
+          newMenuItem.publicItem = createPublicTemplate(nodeParams.node_title, nodeParams.node_url);
+          newMenuItem.adminItem = createAdminTemplate(nodeParams.node_title, nodeParams.node_url, nodeParams.node_key)
         }
+        //
+        templateText.val(newMenuItem.publicItem);
+        itemUtilityTemplate.val(newMenuItem.adminItem);
+        //
+        return;
+      }
+
+      function correctItemTemplate (formData, jqForm, options){
+        nodeParams.node_title = inputItemTitle.val();
+        createMenuTemplate(nodeParams);
+        return true;
+      }
+
+      function updateConstructorMenu(responseText, statusText, xhr, $form){
+        $form.resetForm();
+        menu
+          .find('.dropdown-toggle')
+            .dropdown();
+        return true;
+      };
+
+      $('#js_newItemSource').ajaxForm({
+        beforeSerialize : correctItemTemplate,
+        success: updateConstructorMenu
+      });
+
+      menu
+        .find('.js_edit_admin_menu_item')
+          .on('click', admin_item_config_handler);
 
 		});
 	</script>
@@ -219,38 +235,26 @@
 
             <div class="tab-content">
               <div class="tab-pane active" id="main">
-                
                 <div class="control-group">
                   <label class="control-label" for="inputItemTitle">Назва</label>
                   <div class="controls">
-                    <input name="itemTitle" type="text" id="inputItemTitle">
+                    <input name="itemTitle" type="text" id="inputItemTitle" />
+                    <input type="hidden" name="itemUrl" id="inputItemUrl" />
                   </div>
-                </div>
-                
-                <div class="control-group">
-                  <label class="control-label" for="inputItemUrl">url</label>
-                  <div class="controls">
-                    <input name="itemUrl" type="text" id="inputItemUrl">
-                  </div>
-                </div>
-
-                <legend>
-                  Підпункти
-                </legend>
-                <div id="js_children_list" class="control-group">
-
                 </div>
               </div>
+
               <div class="tab-pane" id="additionals">
                 <div class="control-group">
                   <label class="control-label" for="itemTemplateText">Шаблон</label>
-                  <div class="controls">
-                    <textarea name="itemTemplate" id="itemTemplateText"></textarea>
-                    <textarea name="itemUtilityTemplate" id="itemUtilityTemplateText" style="display:none;"></textarea>
-                  </div>
+                    <div class="controls">
+                      <textarea name="itemTemplate" id="itemTemplateText"></textarea>
+                      <textarea name="itemUtilityTemplate" id="itemUtilityTemplateText" style="display:none;"></textarea>
+                    </div>
                 </div>
               </div>
             </div>
+            
 
             <div class="control-group">
               <div class="controls">
@@ -268,5 +272,19 @@
   <div class="tab-pane" id="messages">...</div>
   <div class="tab-pane" id="settings">...</div>
 </div>
+     
+   <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" class="modal hide fade" id="myModal" style="display: none;">
+            <div class="modal-header">
+              <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+              <h3 id="myModalLabel">Параметри пункта меню</h3>
+            </div>
+            <div class="modal-body">
+              
+            </div>
+            <div class="modal-footer">
+              <button data-dismiss="modal" class="btn">Закрити</button>
+              <button class="btn btn-primary">Застосувати</button>
+            </div>
+          </div>
 
 {% endblock %}
