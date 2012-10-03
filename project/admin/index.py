@@ -62,6 +62,27 @@ class GeneralView(AdminIndexView):
             status = u'Помилка під час зберігання'
         return Response(status)
 
+    @expose('/menu/<int:menu_id>/settings', methods=('GET', 'POST',))
+    def menu_settings(self, menu_id=0):
+        if request.method == 'GET':
+            itemTmpl = ''
+            try:
+                itemTmpl = Menu.get(id=menu_id).template
+            except Menu.DoesNotExist, e:
+                print 'Error while loading item template, %s' % e
+            return itemTmpl
+        elif request.method == 'POST':
+            form = request.form
+            itemTitle = form.get('itemTitle', None)
+            itemTemplate = form.get('itemTemplate', None)
+            if itemTitle and itemTemplate:
+                menu = Menu.update(title=itemTitle,template=itemTemplate).where(id=menu_id)
+                menu.execute()
+                flash(u'Зміни внесені успішно')
+            else:
+                flash(u'Під час збереження сталась помилка')
+            return redirect(url_for('.index'))
+
     def get_children(self, children_set):
     	result = []
     	for child in children_set:

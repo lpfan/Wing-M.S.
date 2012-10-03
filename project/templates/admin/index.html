@@ -22,6 +22,19 @@
     form.prop({
       action:jThis.prop('href')
     })
+    form
+      .find('#menuItemTitle')
+        .val(jThis.prop('title'));
+    var publicTmpl = '';
+    $.ajax({
+      url:jThis.prop('href'),
+      success:function(data, textStatus, jqXHR){
+        if (textStatus == 'success'){
+          $('#menuItemTemplate').val(data);
+        };
+        return;
+      }
+    })
     modal.modal('show');
     return false;
   }
@@ -87,13 +100,13 @@
                 .html(val.title)
                 ).appendTo(jHolder);
           });
-          item = '<li>' + 
-                    '<a href="' + node_url + '" title="' + node_title +'">' + node_title + '</a>' + 
+          item = '<li>\n' + 
+                    '\t<a href="' + node_url + '" title="' + node_title +'">' + node_title + '</a>\n' + 
                     jHolder.prop('outerHTML') + 
                 '</li>';
           return item;
         } 
-        item = '<li><a href="' + node_url + '" title="' + node_title +'">' + node_title + '</a></li>';
+        item = '<li>\n\t<a href="' + node_url + '" title="' + node_title +'">' + node_title + '</a>\n</li>';
         return item
       }
 
@@ -204,10 +217,14 @@
         <ul id="menu_structure" class="nav">
           {% for m in menu %}
             <li class="dropdown">
-              {{m.utility_template|safe}}
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{m.title}}</a>
               <ul class="dropdown-menu">
-                <li class="divider"></li>
-                <a href="/config_menu_items/{{m.id}}" title="">edit</a> 
+                <li>
+                  <a class="js_edit_admin_menu_item" href="{{url_for('.menu_settings', menu_id=m.id)}}" title="{{m.title}}">edit</a> 
+                </li>
+                <li>
+                  <a class="" href="#">remove</a>
+                </li>
               </ul>
             </li>
           {%endfor%}
@@ -219,50 +236,28 @@
     <div class="row">
       <div class="span4">
         <div id="tree"> </div>
-      </div>
 
-      <div class="span8">
-        <div id="item_options">
-          <form id="js_newItemSource" action="{{url_for('.new_menu_item')}}" method="POST" class="form-inline">
-            <legend>
-               Параметри нового пункту меню
-            </legend>
-            <ul class="nav nav-tabs" id="myTab">
-              <li class="active"><a href="#main">Основні параметри</a></li>
-              <li><a href="#additionals">Додатково</a></li>
-            </ul>
-
-            <div class="tab-content">
-              <div class="tab-pane active" id="main">
-                <div class="control-group">
-                  <label class="control-label" for="inputItemTitle">Назва</label>
-                  <div class="controls">
-                    <input name="itemTitle" type="text" id="inputItemTitle" />
-                    <input type="hidden" name="itemUrl" id="inputItemUrl" />
-                  </div>
-                </div>
-              </div>
-
-              <div class="tab-pane" id="additionals">
-                <div class="control-group">
-                  <label class="control-label" for="itemTemplateText">Шаблон</label>
-                    <div class="controls">
-                      <textarea name="itemTemplate" id="itemTemplateText"></textarea>
-                      <textarea name="itemUtilityTemplate" id="itemUtilityTemplateText" style="display:none;"></textarea>
-                    </div>
-                </div>
-              </div>
-            </div>
+        <form id="js_newItemSource" action="{{url_for('.new_menu_item')}}" method="POST" class="form-inline">
             
+          <input type="hidden" name="itemTitle" type="text" id="inputItemTitle" />
+          <input type="hidden" name="itemUrl" id="inputItemUrl" />
+
+          <textarea name="itemTemplate" id="itemTemplateText" style="display:none;"></textarea>
+          <textarea name="itemUtilityTemplate" id="itemUtilityTemplateText" style="display:none;"></textarea>
 
             <div class="control-group">
               <div class="controls">
-                <button class="btn btn-danger">скасувати</button>
                 <input class="btn btn-primary" type="submit" value="Додати" />
               </div>
             </div>
 
           </form>
+      </div>
+
+      <div class="span8">
+        <div id="item_options">
+          
+          
         </div>
       </div>
     </div>
@@ -281,20 +276,21 @@
               <form id="js_menuItem_settings" method="POST">
 
                  <div class="control-group">
-                  <label class="control-label" for="menuItemTitle">Email</label>
+                  <label class="control-label" for="menuItemTitle">Назва пункта</label>
                     <div class="controls">
                       <input type="text" name="itemTitle" id="menuItemTitle" />
                     </div>
+                    <div class="controls">
+                      <textarea id="menuItemTemplate" name="itemTemplate" rows="7" style="width:100%;"></textarea>
+                    </div>
                 </div>
-
-                <input type="submit" class="btn btn-primary" value="Зберегти" />
-
-              </form>
+              
             </div>
             <div class="modal-footer">
               <button data-dismiss="modal" class="btn">Закрити</button>
-              <button class="btn btn-primary">Застосувати</button>
+              <input type="submit" class="btn btn-primary" value="Застосувати" />
             </div>
           </div>
+          </form>
 
 {% endblock %}
