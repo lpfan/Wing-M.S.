@@ -1,4 +1,6 @@
-import peewee
+# -*- coding: utf-8 -*-
+
+import peewee, pickle, pdb
 
 from datetime import datetime as dt
 from random import choice
@@ -7,12 +9,29 @@ from utils import return_slug
 
 _database = peewee.MySQLDatabase('wing_cms', user='wing_user', passwd='wing_cms')
 
+
 class BaseModel(peewee.Model):
 
 	class Meta:
 		database = _database
 
+class ArticleRevision(BaseModel):
+    pickle_obj = peewee.TextField()
+    creation_date = peewee.DateField(default = dt.today().date())
+
+    def __unicode__(self):
+        return 'rev. from %s. v%s' % (self.creation_date.strftime('%Y-%m-%d'), self.id)
+
+class CategoryRevision(BaseModel):
+    pickle_obj = peewee.TextField()
+    creation_date = peewee.DateField(default = dt.today().date())
+
+    def __unicode__(self):
+        return 'rev. from %s. v%s' % (self.creation_date.strftime('%Y-%m-%d'), self.id)
+
+
 class Category(BaseModel):
+    revision = peewee.ForeignKeyField(CategoryRevision, related_name='revisions', null=True)
     title = peewee.CharField(max_length=100)
     text = peewee.TextField(null=True)
     is_visible = peewee.BooleanField(default=False)
@@ -21,6 +40,10 @@ class Category(BaseModel):
 
     def save(self):
         self.slug  = return_slug(aTitle=self.title)
+        rev = CategoryRevision()
+        rev.pickle_obj = pickle.dumps(self)
+        rev.save()
+        self.revision = rev
         super(Category, self).save()
 
     def __unicode__(self):
@@ -42,11 +65,16 @@ class Article(BaseModel):
     text = peewee.TextField(null=True)
     is_visible = peewee.BooleanField(default=False)
     is_index = peewee.BooleanField(default=False, unique = True)
+    revision = peewee.ForeignKeyField(ArticleRevision, related_name='revisions', null=True)
     date = peewee.DateField(default = dt.today().date())
     slug = peewee.CharField()
 
     def save(self):
         self.slug  = return_slug(aTitle=self.title)
+        rev = ArticleRevision()
+        rev.pickle_obj = pickle.dumps(self)
+        rev.save()
+        self.revision = rev 
         super(Article, self).save()
 
     def get_permalink(self):
@@ -58,6 +86,7 @@ class Article(BaseModel):
 
     def get_config_link(self):
         return '/config/articles/%s' % self.id
+
 
 class User(BaseModel):
     nickname = peewee.CharField()
@@ -77,6 +106,7 @@ class User(BaseModel):
     def is_editor(self):
         status = True if self.group == "editor" else False
         return status
+
 
 class Album(BaseModel):
     title = peewee.CharField(max_length=100)
@@ -115,10 +145,18 @@ class Menu(BaseModel):
     template = peewee.TextField()
     utility_template = peewee.TextField()
 
+class GeneralMeta(BaseModel):
+    meta_d = peewee.TextField(null=True)
+    meta_k = peewee.TextField(null=True)
+
 _database.connect()
+ArticleRevision.create_table(True)
+CategoryRevision.create_table(True)
 Article.create_table(True)
 Category.create_table(True)
 User.create_table(True)
 Album.create_table(True)
 Photo.create_table(True)
 Menu.create_table(True)
+GeneralMeta.create_table(True)
+

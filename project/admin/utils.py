@@ -12,7 +12,7 @@ class My_ModelView(ModelView):
     edit_template = 'admin/custom_edit.html'
     create_template = 'admin/custom_create.html'
     excluded_list_columns = ('text')
-    excluded_form_columns = ('slug',)
+    excluded_form_columns = ('slug', 'revision')
 
 class UsersView(ModelView):
     excluded_list_columns = ('password')

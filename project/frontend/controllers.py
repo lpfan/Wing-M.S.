@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import pdb
 
-from flask import Response, request, url_for, redirect, flash, render_template
+from flask import Response, request, url_for, redirect, flash, render_template, abort
 
 from project import app
 from project.admin.models import Article, Menu
@@ -31,6 +31,7 @@ def show_alone_article(slug):
         obj = Article.get(slug=slug)
     except Article.DoesNotExist, e:
         print "Error while geting article, %s" % e
+        abort(404)
     return render_template(template_path+'index.html',
         title=obj.title,
         content=obj.text if obj else 'Empty content',
@@ -44,3 +45,11 @@ def show_category(cat_slug):
 def send_static_file(filename):
     path = 'images/' + filename
     return app.send_static_file(path)
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template(template_path + '404.html'), 404
+
+@app.errorhandler(500)
+def page_not_found(e):
+    return render_template(template_path + '500.html'), 500

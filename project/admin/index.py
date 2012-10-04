@@ -4,15 +4,34 @@ import pdb, json, pickle
 
 from flask import Response, request, url_for, redirect, flash
 from flask.ext.admin import Admin, BaseView, expose
-from models import Category, Article, Menu
+from models import Category, Article, Menu, GeneralMeta
+from forms import MetaDataForm
 from flask.ext.admin.base import AdminIndexView
 
 class GeneralView(AdminIndexView):
     @expose('/')
     def index(self):
     	menu = Menu.select()
+        g_m = GeneralMeta.get_or_create(id=1)
+        form = MetaDataForm(obj=g_m)
     	categories = Category.select()
-        return self.render('admin/index.html', categories=categories, menu=menu)
+        return self.render(
+            'admin/index.html',
+            categories=categories,
+            menu=menu,
+            meta_form = form
+        )
+
+    @expose('/meta_info/store', methods=['POST'])
+    def store_meta_info(self):
+        form = MetaDataForm(request.form or None)
+        if form and form.validate():
+            g_m = GeneralMeta.update(meta_d = "".join(form.meta_d.raw_data), meta_k = "".join(form.meta_k.raw_data)).where(id=1)
+            g_m.execute()
+            flash(u'Мета інформація обновлена успішно')
+        else:
+            flash(u'Помилка під час валідації даних')
+        return redirect(url_for('.index'))
 
     @expose('/content_structure')
     def content_structure(self):

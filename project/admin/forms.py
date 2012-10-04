@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from flask.ext import login, wtf
 from flask.ext.wtf import Form, IntegerField, BooleanField, validators
 from models import User
@@ -38,4 +40,16 @@ class RegistrationForm(wtf.Form):
 class NewAlbumForm(wtf.Form):
     title = wtf.TextField(validators=[wtf.required()])
     description = wtf.TextAreaField()
+
+class MetaDataForm(wtf.Form):
+    meta_d = wtf.TextAreaField(
+        label=u'"Пошуковий" опис',
+        description=u"Пошукові системи відображають цю інформацію при виводі результатів пошуку",
+        validators=[wtf.required()]
+    )
+    meta_k = wtf.TextAreaField(
+        label=u"Ключові слова",
+        description=u"Перелік ключових слів, які будуть застосовуватися на кожній сторінці сайту",
+        validators=[wtf.required()]
+    )
 

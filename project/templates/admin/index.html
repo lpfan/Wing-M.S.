@@ -202,7 +202,7 @@
 
 <ul class="nav nav-tabs" id="myTab">
   <li class="active"><a href="#menu_settings">Налаштування головного меню</a></li>
-  <li><a href="#profile">Profile</a></li>
+  <li><a href="#profile">Пошукова оптимізація</a></li>
   <li><a href="#messages">Messages</a></li>
   <li><a href="#settings">Settings</a></li>
 </ul>
@@ -262,7 +262,46 @@
       </div>
     </div>
   </div>
-  <div class="tab-pane" id="profile">...</div>
+  <!-- META keyvords settings -->
+  <div class="tab-pane" id="profile">
+    <div class="navbar">
+      <h4>Загальні пошукові слова</h4>
+      <form action="{{url_for('.store_meta_info')}}" method="POST" class="">
+        {{meta_form.csrf_token}}
+        
+        <div class="control-group">
+
+          {{meta_form.meta_d.label(class="control-label")}}
+          <div class="controls">
+            {{meta_form.meta_d(style="margin:0 auto;height:100px;width:600px;")}}
+          </div>
+
+          {{meta_form.meta_d.description}}
+
+        </div>
+
+        <div class="control-group">
+
+          {{meta_form.meta_k.label(class="control-label")}}
+
+          <div class="controls">
+            {{meta_form.meta_k(style="margin:0 auto;height:100px;width:600px;")}}
+          </div>
+
+          {{meta_form.meta_k.description}}
+
+        </div>
+
+        <div class="control-group">
+          <div class="controls">
+            <input type="submit" class="btn btn-primary" value="зберегти" />
+          </div>
+        </div>
+      </div>
+      </form>
+
+  </div>
+
   <div class="tab-pane" id="messages">...</div>
   <div class="tab-pane" id="settings">...</div>
 </div>

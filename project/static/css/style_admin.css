@@ -23,3 +23,8 @@
 .control_items_holder li {
 	float:left;
 }
+
+.default_text_area {
+  height:200px;
+  width:100%;
+}
