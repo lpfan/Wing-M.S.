@@ -7,9 +7,11 @@ from flask.ext.admin import Admin, BaseView, expose
 from models import Category, Article, Menu, GeneralMeta
 from forms import MetaDataForm
 from flask.ext.admin.base import AdminIndexView
+from flask.ext.login import login_required
 
 class GeneralView(AdminIndexView):
     @expose('/')
+    @login_required
     def index(self):
     	menu = Menu.select()
         g_m = GeneralMeta.get_or_create(id=1)
@@ -43,7 +45,7 @@ class GeneralView(AdminIndexView):
     			children.append({
     				'title':category.title,
                     'href':category.get_link(),
-                    'key': category.get_config_link(),
+                    'key': category.slug,
     				'isFolder': 'true',
     				'children':self.get_children(articles)
     				})
@@ -51,13 +53,13 @@ class GeneralView(AdminIndexView):
     			children.append({
                     'title':category.title,
                     'href':category.get_link(),
-                    'key':category.get_config_link()
+                    'key':category.slug
                     })
         for article in Article.filter(is_visible=True).where(category__is=None):
             children.append({
                 'title':article.title,
                 'href':article.get_link(),
-                'key':article.get_config_link()
+                'key':article.slug
             })
     	return json.dumps(children)
 
@@ -68,11 +70,13 @@ class GeneralView(AdminIndexView):
         itemUrl = form.get('itemUrl', None)
         itemTemplate = form.get('itemTemplate', None)
         itemUtilityTemplate = form.get('itemUtilityTemplate', None)
+        itemSlug = form.get('itemSlug', None)
         menu = Menu()
         menu.title = itemTitle
         menu.url = itemUrl
         menu.template = itemTemplate
         menu.utility_template = itemUtilityTemplate
+        menu.slug = itemSlug
         status = None
         try:
             status = u'Новий пункт меню успішно збережений'
@@ -101,6 +105,15 @@ class GeneralView(AdminIndexView):
             else:
                 flash(u'Під час збереження сталась помилка')
             return redirect(url_for('.index'))
+
+    @expose('/menu/remove_menu_item/<int:menu_id>', methods=('GET',))
+    def remove_menu_item(self, menu_id):
+        try:
+            Menu.get(id=menu_id).delete_instance()
+            flash(u'Пункт меню видалений успішно')
+        except Menu.DoesNotExist, e:
+            print "Error while deleting menu item, %s" % e
+        return redirect(url_for('.index'))
 
     def get_children(self, children_set):
     	result = []

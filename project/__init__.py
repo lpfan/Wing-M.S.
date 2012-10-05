@@ -3,6 +3,9 @@
 import os, pdb
 
 from flask import Flask
+
+app = Flask(__name__)
+
 from flask.ext.admin.base import Admin
 from flask.ext.admin import expose
 from admin.models import Article, Category, User
@@ -11,11 +14,13 @@ from admin.gallery import GalleryView
 from admin.utils import My_ModelView, UsersView
 from flask.ext.admin.contrib import fileadmin
 from admin.index import GeneralView
+from admin.auth import *
+
 
 def rel(*x):
     return os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
 
-app = Flask(__name__)
+
 UPLOAD_FOLDER = os.path.join(rel('static'), 'uploads')
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 SETTINGS_PATH = rel('settings.cfg')
@@ -59,3 +64,4 @@ app.debug = True
 SECRET_KEY = 'misha1987'
 
 app.config.from_object(__name__)
+login_manager.setup_app(app)

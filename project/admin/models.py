@@ -29,6 +29,13 @@ class CategoryRevision(BaseModel):
     def __unicode__(self):
         return 'rev. from %s. v%s' % (self.creation_date.strftime('%Y-%m-%d'), self.id)
 
+class Menu(BaseModel):
+    title = peewee.CharField()
+    slug = peewee.CharField()
+    url = peewee.CharField()
+    template = peewee.TextField()
+    utility_template = peewee.TextField()
+
 
 class Category(BaseModel):
     revision = peewee.ForeignKeyField(CategoryRevision, related_name='revisions', null=True)
@@ -36,7 +43,7 @@ class Category(BaseModel):
     text = peewee.TextField(null=True)
     is_visible = peewee.BooleanField(default=False)
     date = peewee.DateField(default = dt.today().date())
-    slug = peewee.CharField()
+    slug = peewee.CharField(unique=True)
 
     def save(self):
         self.slug  = return_slug(aTitle=self.title)
@@ -45,6 +52,13 @@ class Category(BaseModel):
         rev.save()
         self.revision = rev
         super(Category, self).save()
+
+    def delete_instance(self, recursive=False):
+        try:
+            Menu.get(slug=self.slug).delete_instance()
+        except Menu.DoesNotExist, e:
+            print "Error while removing menu item, %s" % e
+        super(Category, self).delete_instance(recursive=False)
 
     def __unicode__(self):
         return self.title
@@ -67,7 +81,7 @@ class Article(BaseModel):
     is_index = peewee.BooleanField(default=False, unique = True)
     revision = peewee.ForeignKeyField(ArticleRevision, related_name='revisions', null=True)
     date = peewee.DateField(default = dt.today().date())
-    slug = peewee.CharField()
+    slug = peewee.CharField(unique=True)
 
     def save(self):
         self.slug  = return_slug(aTitle=self.title)
@@ -76,6 +90,13 @@ class Article(BaseModel):
         rev.save()
         self.revision = rev 
         super(Article, self).save()
+
+    def delete_instance(self):
+        try:
+            Menu.get(slug=self.slug).delete_instance()
+        except Menu.DoesNotExist, e:
+            print "Error while removing menu item, %s" % e
+        super(Article, self).delete_instance() 
 
     def get_permalink(self):
         return '<a href="/articles/%s" title="%s">%s</a>' % (self.slug, self.title, self.title)
@@ -138,12 +159,6 @@ class Photo(BaseModel):
 
     def __unicode__(self):
         return self.title
-
-class Menu(BaseModel):
-    title = peewee.CharField()
-    url = peewee.CharField()
-    template = peewee.TextField()
-    utility_template = peewee.TextField()
 
 class GeneralMeta(BaseModel):
     meta_d = peewee.TextField(null=True)

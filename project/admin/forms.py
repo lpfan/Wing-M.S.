@@ -12,8 +12,15 @@ class ImageSettingsForm(Form):
 	thumb_size_height = IntegerField(u'Thumbnail Height', [validators.required()])
 
 class LoginForm(wtf.Form):
-    login = wtf.TextField(validators=[wtf.required()])
-    password = wtf.PasswordField(validators=[wtf.required()])
+    login = wtf.TextField(
+        label=u"Ім&#96;я",
+        validators=[wtf.required()]
+    )
+
+    password = wtf.PasswordField(
+        label=u"Пароль",
+        validators=[wtf.required()]
+    )
 
     def validate_login(self, field):
         user = self.get_user()

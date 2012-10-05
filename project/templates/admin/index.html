@@ -123,7 +123,9 @@
           .append(
             $('<b />').addClass('caret')
           );
-
+        // set slug
+        $('#inputSlug').val(node_key)
+        //
         if (node_children && node_children.length > 0){
           $.each(node_children, function(i, val){
             $('<li />').append(
@@ -203,8 +205,6 @@
 <ul class="nav nav-tabs" id="myTab">
   <li class="active"><a href="#menu_settings">Налаштування головного меню</a></li>
   <li><a href="#profile">Пошукова оптимізація</a></li>
-  <li><a href="#messages">Messages</a></li>
-  <li><a href="#settings">Settings</a></li>
 </ul>
  
 <div class="tab-content">
@@ -220,10 +220,10 @@
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{m.title}}</a>
               <ul class="dropdown-menu">
                 <li>
-                  <a class="js_edit_admin_menu_item" href="{{url_for('.menu_settings', menu_id=m.id)}}" title="{{m.title}}">edit</a> 
+                  <a class="js_edit_admin_menu_item" href="{{url_for('.menu_settings', menu_id=m.id)}}" title="{{m.title}}">редагувати</a> 
                 </li>
                 <li>
-                  <a class="" href="#">remove</a>
+                  <a class="" href="{{url_for('.remove_menu_item', menu_id=m.id)}}">видалити</a>
                 </li>
               </ul>
             </li>
@@ -241,6 +241,7 @@
             
           <input type="hidden" name="itemTitle" type="text" id="inputItemTitle" />
           <input type="hidden" name="itemUrl" id="inputItemUrl" />
+          <input type="hidden" name="itemSlug" id="inputSlug" />
 
           <textarea name="itemTemplate" id="itemTemplateText" style="display:none;"></textarea>
           <textarea name="itemUtilityTemplate" id="itemUtilityTemplateText" style="display:none;"></textarea>
@@ -302,8 +303,6 @@
 
   </div>
 
-  <div class="tab-pane" id="messages">...</div>
-  <div class="tab-pane" id="settings">...</div>
 </div>
      
    <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" class="modal hide fade" id="myModal" style="display: none;">

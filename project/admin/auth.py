@@ -1,18 +1,32 @@
-from flask.ext import login, wtf
+from flask.ext.login import LoginManager
+from flask.ext.login import login_user
+from forms import LoginForm
+from flask import render_template
 
-class LoginForm(wtf.Form):
-    login = wtf.TextField(validators=[wtf.required()])
-    password = wtf.PasswordField(validators=[wtf.required()])
+from project import app
 
-    def validate_login(self, field):
-        user = self.get_user()
+login_manager = LoginManager()
 
-        if user is None:
-            raise wtf.ValidationError('Invalid user')
+@login_manager.user_loader
+def load_user(userid):
+    return User.get(userid)
 
-        if user.password != self.password.data:
-            raise wtf.ValidationError('Invalid password')
 
-    def get_user(self):
-        return db.session.query(User).filter_by(login=self.login.data).first()
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        # login and validate the user...
+        login_user(user)
+        flash("Logged in successfully.")
+        return redirect(request.args.get("next") or url_for("index"))
+    return render_template("admin/login.html", form=form)
+
+@app.route("/register", methods=('POST', 'GET',))
+def register():
+    pass
+
+
+
+
 
