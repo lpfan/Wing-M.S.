@@ -1,9 +1,12 @@
+import pdb
+
 from flask.ext.login import LoginManager
 from flask.ext.login import login_user
-from forms import LoginForm
-from flask import render_template
+from forms import LoginForm, RegistrationForm
+from flask import render_template, request, escape, redirect, url_for
 
 from project import app
+from models import User
 
 login_manager = LoginManager()
 
@@ -24,7 +27,15 @@ def login():
 
 @app.route("/register", methods=('POST', 'GET',))
 def register():
-    pass
+    form = RegistrationForm(request.form or None)
+    if request.method == 'GET':
+        return render_template('admin/register.html', form=form)
+    else:
+        if form.validate_on_submit():
+            user = User()
+            form.populate_obj(user)
+            user.save()
+            return redirect(url_for('login'))
 
 
 

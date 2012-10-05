@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
+import pdb
 
 from flask.ext import login, wtf
 from flask.ext.wtf import Form, IntegerField, BooleanField, validators
 from models import User
+
+from project import bcrypt
 
 class ImageSettingsForm(Form):
 	allow_image_resize = BooleanField(u'Allow Image Resizing', [validators.required()])
@@ -37,12 +40,13 @@ class LoginForm(wtf.Form):
 
 class RegistrationForm(wtf.Form):
     login = wtf.TextField(validators=[wtf.required()])
-    email = wtf.TextField()
+    email = wtf.TextField(validators=[wtf.required(), wtf.validators.Email()])
     password = wtf.PasswordField(validators=[wtf.required()])
 
     def validate_login(self, field):
-        if len([u for u in User.select().where(nickname__eq=self.login)]) > 0:
-            raise wtf.ValidationError('Duplicate username')
+        current_ident_hash = bcrypt.generate_password_hash(self.login.raw_data)
+        if User.filter(ident_hash=current_ident_hash).count():
+            raise wtf.ValidationError(u'Користувач з ніком %s вже зареєстрований. Оберіть інше ім&#96;я')
 
 class NewAlbumForm(wtf.Form):
     title = wtf.TextField(validators=[wtf.required()])

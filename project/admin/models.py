@@ -7,6 +7,8 @@ from random import choice
 from datetime import datetime as dt
 from utils import return_slug
 
+from project import bcrypt
+
 _database = peewee.MySQLDatabase('wing_cms', user='wing_user', passwd='wing_cms')
 
 
@@ -110,12 +112,23 @@ class Article(BaseModel):
 
 
 class User(BaseModel):
-    nickname = peewee.CharField()
-    fullname = peewee.CharField()
-    group = peewee.CharField()
+    login = peewee.CharField()
+    fullname = peewee.CharField(null=True)
+    group = peewee.CharField(null=True)
     password = peewee.CharField()
     email = peewee.CharField()
+    salt = peewee.CharField()
     is_active = peewee.BooleanField(default = True)
+    ident_hash = peewee.CharField(unique=True)
+
+    def save(self):
+        #pdb.set_trace()
+        self.salt = bcrypt.generate_password_hash(
+            self.login[::-1]
+        )
+        self.ident_hash = bcrypt.generate_password_hash(self.login)
+        self.password = bcrypt.generate_password_hash(self.salt+self.password)
+        super(User, self).save()
 
     def __unicode__(self):
         return "%s, %s, %s" % self.nickname, self.group, self.password
@@ -127,6 +140,16 @@ class User(BaseModel):
     def is_editor(self):
         status = True if self.group == "editor" else False
         return status
+
+    def is_authenticated():
+        pass
+
+    def is_active():
+        if not self.is_active: return False
+        return True
+
+    def get_id():
+        return unicode(self.id)
 
 
 class Album(BaseModel):

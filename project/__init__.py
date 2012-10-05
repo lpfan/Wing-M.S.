@@ -3,8 +3,10 @@
 import os, pdb
 
 from flask import Flask
+from flask.ext.bcrypt import Bcrypt
 
 app = Flask(__name__)
+bcrypt = Bcrypt(app)
 
 from flask.ext.admin.base import Admin
 from flask.ext.admin import expose
@@ -15,7 +17,6 @@ from admin.utils import My_ModelView, UsersView
 from flask.ext.admin.contrib import fileadmin
 from admin.index import GeneralView
 from admin.auth import *
-
 
 def rel(*x):
     return os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
