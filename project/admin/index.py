@@ -7,11 +7,14 @@ from flask.ext.admin import Admin, BaseView, expose
 from models import Category, Article, Menu, GeneralMeta
 from forms import MetaDataForm
 from flask.ext.admin.base import AdminIndexView
-from flask.ext.login import login_required
+from flask.ext import login
 
 class GeneralView(AdminIndexView):
+
+    def is_accessible(self):
+        if not login.current_user.is_anonymous(): return True
+
     @expose('/')
-    @login_required
     def index(self):
     	menu = Menu.select()
         g_m = GeneralMeta.get_or_create(id=1)

@@ -122,7 +122,6 @@ class User(BaseModel):
     ident_hash = peewee.CharField(unique=True)
 
     def save(self):
-        #pdb.set_trace()
         self.salt = bcrypt.generate_password_hash(
             self.login[::-1]
         )
@@ -131,7 +130,7 @@ class User(BaseModel):
         super(User, self).save()
 
     def __unicode__(self):
-        return "%s, %s, %s" % self.nickname, self.group, self.password
+        return "%s" % self.login
 
     def is_admin(self):
         status = True if self.group == "admin" else False
@@ -141,15 +140,21 @@ class User(BaseModel):
         status = True if self.group == "editor" else False
         return status
 
-    def is_authenticated():
-        pass
+    def is_anonymous(self):
+        return False
 
-    def is_active():
+    def is_authenticated(self, aUser='', aPassword=''):
+        salt = self.salt
+        salted_passwd = salt + str(aPassword)
+        if bcrypt.check_password_hash(self.password, salted_passwd):return True
+        return None
+
+    def is_active(self):
         if not self.is_active: return False
         return True
 
-    def get_id():
-        return unicode(self.id)
+    def get_id(self):
+        return self.id
 
 
 class Album(BaseModel):

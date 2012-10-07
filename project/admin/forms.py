@@ -4,6 +4,7 @@ import pdb
 from flask.ext import login, wtf
 from flask.ext.wtf import Form, IntegerField, BooleanField, validators
 from models import User
+from flask import escape
 
 from project import bcrypt
 
@@ -31,12 +32,16 @@ class LoginForm(wtf.Form):
         if user is None:
             raise wtf.ValidationError('Invalid user')
 
-        if user.password != self.password.data:
+        if not user.is_authenticated(aUser=''.join(self.login.raw_data), aPassword=''.join(self.password.raw_data)):
             raise wtf.ValidationError('Invalid password')
 
     def get_user(self):
-    	user_set = [u for u in User.select().where(nickname__eq=self.login)][0]
-        return user_set
+    	user = None
+        try:
+            user = User.get(login=self.login.raw_data)
+        except User.DoesNotExist, e:
+            print 'User with %s username does not exists' % self.login.raw_data
+        return user
 
 class RegistrationForm(wtf.Form):
     login = wtf.TextField(validators=[wtf.required()])
@@ -44,7 +49,7 @@ class RegistrationForm(wtf.Form):
     password = wtf.PasswordField(validators=[wtf.required()])
 
     def validate_login(self, field):
-        current_ident_hash = bcrypt.generate_password_hash(self.login.raw_data)
+        current_ident_hash = bcrypt.generate_password_hash("".join(self.login.raw_data))
         if User.filter(ident_hash=current_ident_hash).count():
             raise wtf.ValidationError(u'Користувач з ніком %s вже зареєстрований. Оберіть інше ім&#96;я')
 
