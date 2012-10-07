@@ -23,6 +23,14 @@
                         {{form.login.label(class="control-label")}}
                         <div class="controls">
                             {{form.login}}
+
+                            {% if form.login.errors %}
+                                <p class="text-error">
+                                {%for error in form.login.errors %}
+                                    {{error}}
+                                {%endfor%}
+                                </p>
+                            {%endif%}
                         </div>
 
                     </div>
@@ -31,6 +39,15 @@
                         {{form.password.label(class="control-label")}}
                         <div class="controls">
                             {{form.password}}
+
+                            {% if form.password.errors %}
+                                <p class="text-error">
+                                {%for error in form.password.errors %}
+                                    {{error}}
+                                {%endfor%}
+                                </p>
+                            {%endif%}
+
                         </div>
 
                     </div>

@@ -30,10 +30,10 @@ class LoginForm(wtf.Form):
         user = self.get_user()
 
         if user is None:
-            raise wtf.ValidationError('Invalid user')
+            raise wtf.ValidationError(u'Користувача з логіном %s не існує' % self.login.data)
 
         if not user.is_authenticated(aUser=''.join(self.login.raw_data), aPassword=''.join(self.password.raw_data)):
-            raise wtf.ValidationError('Invalid password')
+            raise wtf.ValidationError(u'Неспівпадіння паролей')
 
     def get_user(self):
     	user = None

@@ -181,7 +181,11 @@
 
       function updateConstructorMenu(responseText, statusText, xhr, $form){
         $form.resetForm();
+        var newItem = $('<li />')
+          .addClass('dropdown')
+          .append($(responseText));
         menu
+          .append(newItem)
           .find('.dropdown-toggle')
             .dropdown();
         return true;
@@ -202,7 +206,11 @@
 
 {% block body %}
 
-<a href="{{url_for('logout')}}" title="">вихід</a>
+<div class="row">
+  <div class="span1 offset11">
+    <a href="{{url_for('logout')}}" title="">вихід</a>
+  </div>
+</div>
 
 <ul class="nav nav-tabs" id="myTab">
   <li class="active"><a href="#menu_settings">Налаштування головного меню</a></li>

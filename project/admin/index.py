@@ -82,7 +82,7 @@ class GeneralView(AdminIndexView):
         menu.slug = itemSlug
         status = None
         try:
-            status = u'Новий пункт меню успішно збережений'
+            status = menu.utility_template
             menu.save()
         except Exception, e:
             status = u'Помилка під час зберігання'
