@@ -8,10 +8,14 @@ from peewee import DoesNotExist
 from forms import NewAlbumForm
 from models import Album, Photo
 from utils import GalleryManager
+from flask.ext import login
 
 class GalleryView(BaseView):
 
 	gal_man = GalleryManager()
+
+	def is_accessible(self):
+		if not login.current_user.is_anonymous(): return True
 
 	@expose('/')
 	def index(self):

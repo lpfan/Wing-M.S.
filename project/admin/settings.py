@@ -5,10 +5,14 @@ from utils import ConfigManager
 from forms import ImageSettingsForm
 from flask import request, flash, redirect, url_for
 from werkzeug.datastructures import MultiDict
-
+from flask.ext import login
 
 
 class SettingsView(BaseView):
+
+	def is_accessible(self):
+		if not login.current_user.is_anonymous(): return True
+
 	@expose('/', methods=("GET", "POST"))
 	def index(self):
 		config = ConfigManager()

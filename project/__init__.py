@@ -10,12 +10,12 @@ bcrypt = Bcrypt(app)
 
 from flask.ext.admin.base import Admin
 from flask.ext.admin import expose
-from admin.models import Article, Category, User
-from admin.settings import SettingsView
+from admin.models import Article, Category, User, GeneralMeta
 from admin.gallery import GalleryView
-from admin.utils import My_ModelView, UsersView
 from flask.ext.admin.contrib import fileadmin
+from admin.utils import My_ModelView, UsersView
 from admin.index import GeneralView
+from admin.settings import SettingsView
 from admin.auth import *
 
 def rel(*x):
@@ -34,6 +34,18 @@ admin.init_app(app)
 from admin.file_upload import *
 from frontend.controllers import index
 
+
+@app.context_processor
+def teardown_request(exception=None):
+    general_meta_k = ''
+    general_meta_d = ''
+    try:
+        general_meta_k = GeneralMeta.get(id=1).meta_k
+        general_meta_d = GeneralMeta.get(id=1).meta_d
+    except GeneralMeta.DoesNotExist, e:
+        print "Meta is empty, %s" % e
+    return dict(general_meta_d = general_meta_d, general_meta_k=general_meta_k)
+
 admin.add_view(My_ModelView(
     Article,
     name=u"Сторінки"
@@ -46,15 +58,15 @@ admin.add_view(My_ModelView(
 )
 admin.add_view(UsersView(
     User,
-    name="Users")
+    name=u"Користувачі")
 )
 
 admin.add_view(SettingsView(
-    name="Settings")
+    name=u"Налаштування")
 )
 
 admin.add_view(GalleryView(
-    name = 'Gallery'
+    name = u'Галерея'
     )
 )
 

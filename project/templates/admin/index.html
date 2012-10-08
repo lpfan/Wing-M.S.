@@ -181,13 +181,7 @@
 
       function updateConstructorMenu(responseText, statusText, xhr, $form){
         $form.resetForm();
-        var newItem = $('<li />')
-          .addClass('dropdown')
-          .append($(responseText));
-        menu
-          .append(newItem)
-          .find('.dropdown-toggle')
-            .dropdown();
+        location.reload();
         return true;
       };
 

@@ -6,15 +6,23 @@ from project.config import UPLOAD_FOLDER
 from werkzeug import secure_filename
 from hurry.filesize import size, si
 from pytils.translit import slugify
-
+from flask.ext import login
 
 class My_ModelView(ModelView):
+
+    def is_accessible(self):
+        if not login.current_user.is_anonymous(): return True
+
     edit_template = 'admin/custom_edit.html'
     create_template = 'admin/custom_create.html'
     excluded_list_columns = ('text')
     excluded_form_columns = ('slug', 'revision')
 
 class UsersView(ModelView):
+
+    def is_accessible(self):
+        if not login.current_user.is_anonymous(): return True
+
     excluded_list_columns = ('password')
     form_overrides = dict(group=SelectField)
     form_args = dict(

@@ -8,7 +8,6 @@ from project.admin.models import Article, Menu
 
 template_path = 'frontend/'
 
-
 @app.route('/')
 def index(title=u"головна сторінка"):
     main_content = ''

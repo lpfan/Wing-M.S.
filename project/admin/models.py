@@ -60,7 +60,7 @@ class Category(BaseModel):
             Menu.get(slug=self.slug).delete_instance()
         except Menu.DoesNotExist, e:
             print "Error while removing menu item, %s" % e
-        super(Category, self).delete_instance(recursive=False)
+        super(Category, self).delete_instance(recursive=recursive)
 
     def __unicode__(self):
         return self.title
@@ -93,12 +93,12 @@ class Article(BaseModel):
         self.revision = rev 
         super(Article, self).save()
 
-    def delete_instance(self):
+    def delete_instance(self, recursive=False):
         try:
             Menu.get(slug=self.slug).delete_instance()
         except Menu.DoesNotExist, e:
             print "Error while removing menu item, %s" % e
-        super(Article, self).delete_instance() 
+        super(Article, self).delete_instance(recursive=recursive) 
 
     def get_permalink(self):
         return '<a href="/articles/%s" title="%s">%s</a>' % (self.slug, self.title, self.title)
