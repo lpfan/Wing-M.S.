@@ -4,7 +4,7 @@
     <link href="{{ url_for('static', filename='css/style_admin.css') }}" rel="stylesheet">
 {%endblock%}
 
-{% block body %}
+{%block body %}
 
 <div>
 	<a class="btn btn-primary" href="{{url_for('.new_album')}}">Додати альбом</a>
@@ -16,8 +16,8 @@
 	<ul class="thumbnails">
 	{%for album in albums %}
   		<li class="span2">
-  			<div class="thumbnail">
-  				<a href="{{url_for('.show_album', album_id = album.id)}}" title="{{album.title}}">
+  			<div id="js_thumbs_holder" class="thumbnail">
+  				<a class="image_preview" href="{{url_for('.show_album', album_id = album.id)}}" title="{{album.title}}">
 						<img class="img-polaroid" src="{{url_for('static', filename=album.get_album_thumbnail())}}" alt="" />
 				</a>
 				<h4>{{album.title}}</h4>
