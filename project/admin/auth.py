@@ -13,7 +13,10 @@ login_manager = LoginManager()
 
 @login_manager.user_loader
 def load_user(userid):
-    return User.get(id=userid)
+    try:
+        return User.get(id=userid)
+    except User.DoesNotExists, e:
+        print "Users are empty,%s" % e
 
 
 @app.route("/login", methods=["GET", "POST"])
