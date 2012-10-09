@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
-import pdb, json
+import pdb, json, shutil
 
 from flask import request, redirect, url_for, flash
 from flask.ext.admin import BaseView, expose
 from peewee import DoesNotExist
 from forms import NewAlbumForm
 from models import Album, Photo
-from utils import GalleryManager
+from utils import GalleryManager, return_slug
 from flask.ext import login
 
 class GalleryView(BaseView):
@@ -101,7 +101,9 @@ class GalleryView(BaseView):
 	def remove_album(self, album_id=''):
 		try:
 			album = Album.get(id=album_id)
-			album.delete_instance()
+			album.delete_instance(recursive=True)
+			shutil.rmtree(album.album_path)
+			shutil.rmtree(album.thumb_path)
 			flash(u"Альбом %s видалено успішно" % album.title)
 			return redirect(url_for('.index'))
 		except DoesNotExist:

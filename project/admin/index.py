@@ -4,7 +4,7 @@ import pdb, json, pickle
 
 from flask import Response, request, url_for, redirect, flash
 from flask.ext.admin import Admin, BaseView, expose
-from models import Category, Article, Menu, GeneralMeta
+from models import Category, Article, Menu, Album, GeneralMeta
 from forms import MetaDataForm
 from flask.ext.admin.base import AdminIndexView
 from flask.ext import login

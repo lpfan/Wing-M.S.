@@ -8,6 +8,9 @@ from hurry.filesize import size, si
 from pytils.translit import slugify
 from flask.ext import login
 
+def return_slug(aTitle=''):
+    return slugify(aTitle.lower())
+
 class My_ModelView(ModelView):
 
     def is_accessible(self):
@@ -54,6 +57,7 @@ class GalleryManager():
         self.thumb_folder = os.path.join(UPLOAD_FOLDER, 'thumb')
 
     def create_album(self, aAlbum_title):
+        aAlbum_title = return_slug(aAlbum_title)
         album_path = os.path.join(self.pict_folder, aAlbum_title)
         if not os.path.exists(album_path):
             os.makedirs(album_path)
@@ -109,7 +113,4 @@ class GalleryManager():
         thumb_height = int(ConfigManager().get_section_configs('ThumbnailSize')['height'])
         pil_img = pil_image.resize((thumb_width, thumb_height), Image.ANTIALIAS)
         pil_img.save(os.path.join(thumb_path or self.thumb_folder, png_pict_filename))
-
-def return_slug(aTitle=''):
-    return slugify(aTitle.lower())
 

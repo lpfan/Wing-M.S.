@@ -55,7 +55,7 @@ class Category(BaseModel):
         self.revision = rev
         super(Category, self).save()
 
-    def delete_instance(self, recursive=False):
+    def delete_instance(self, recursive=True):
         try:
             Menu.get(slug=self.slug).delete_instance()
         except Menu.DoesNotExist, e:
@@ -162,6 +162,11 @@ class Album(BaseModel):
     description = peewee.TextField(null=True)
     album_path = peewee.CharField()
     thumb_path = peewee.CharField()
+    slug = peewee.CharField(unique=True)
+
+    def save(self):
+        self.slug = return_slug(aTitle=self.title)
+        super(Album, self).save()
 
     def get_album_thumbnail(self):
         try:
@@ -171,6 +176,13 @@ class Album(BaseModel):
         except IndexError:
             return 'images/default_empty_album.png'
         return 'Album is empty'
+
+    def get_link(self):
+        return '''
+                <a class="image_preview" href="/albums/%s" title="%s">
+                    <img class="img-polaroid" src="%s" alt="" />
+                </a>
+        ''' % (self.slug, self.title, self.get_album_thumbnail())
 
 class Photo(BaseModel):
     album = peewee.ForeignKeyField(Album)

@@ -13,21 +13,38 @@
 	<h3>Список альбомів</h3>
 
 {%if albums%}
-	<ul class="thumbnails">
-	{%for album in albums %}
-  		<li class="span2">
-  			<div id="js_thumbs_holder" class="thumbnail">
-  				<a class="image_preview" href="{{url_for('.show_album', album_id = album.id)}}" title="{{album.title}}">
-						<img class="img-polaroid" src="{{url_for('static', filename=album.get_album_thumbnail())}}" alt="" />
-				</a>
-				<h4>{{album.title}}</h4>
-				<p>
-					{{album.description|safe}}
-				</p>
-			</div>
-  		</li>
-	{%endfor%}
-	</ul>
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {%for album in albums %}
+            <tr>
+                <td>
+	               <a class="image_preview" href="{{url_for('.show_album', album_id = album.id)|safe}}" 
+                   title="{{album.title}}">
+                        <img class="img-polaroid" 
+                        src="{{url_for('static', filename=album.get_album_thumbnail())|safe}}" alt="" />
+                    </a>
+                </td>
+                <td>
+                    <h4>{{album.title}}</h4>
+                </td>
+                <td>
+                    {{album.get_link()}}
+                </td>
+                <td>
+
+                </td>
+            </tr>
+            {%endfor%}
+        </tbody>
+    </table>
 
 {%else%}
 
