@@ -10,7 +10,7 @@ bcrypt = Bcrypt(app)
 
 from flask.ext.admin.base import Admin
 from flask.ext.admin import expose
-from admin.models import Article, Category, User, GeneralMeta
+from admin.models import Article, Category, User, GeneralMeta, Menu
 from admin.gallery import GalleryView
 from flask.ext.admin.contrib import fileadmin
 from admin.utils import My_ModelView, UsersView
@@ -39,12 +39,13 @@ from frontend.controllers import index
 def teardown_request(exception=None):
     general_meta_k = ''
     general_meta_d = ''
+    menu = Menu.select()
     try:
         general_meta_k = GeneralMeta.get(id=1).meta_k
         general_meta_d = GeneralMeta.get(id=1).meta_d
     except GeneralMeta.DoesNotExist, e:
         print "Meta is empty, %s" % e
-    return dict(general_meta_d = general_meta_d, general_meta_k=general_meta_k)
+    return dict(general_meta_d = general_meta_d, general_meta_k=general_meta_k, menu=menu)
 
 admin.add_view(My_ModelView(
     Article,

@@ -178,11 +178,7 @@ class Album(BaseModel):
         return 'Album is empty'
 
     def get_link(self):
-        return '''
-                <a class="image_preview" href="/albums/%s" title="%s">
-                    <img class="img-polaroid" src="%s" alt="" />
-                </a>
-        ''' % (self.slug, self.title, self.get_album_thumbnail())
+        return "/albums/%s" % self.slug
 
 class Photo(BaseModel):
     album = peewee.ForeignKeyField(Album)

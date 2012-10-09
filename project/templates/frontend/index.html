@@ -1,10 +1,14 @@
 {%extends "frontend/base.html" %}
 
+{% block slider %}
+    {% include 'frontend/partials/slider.html' %}
+{%endblock%}
+
 {%block body%}
 
-	{%if content%}
+	{%if article%}
 
-		{{content|safe}}
+		{{article.text|safe}}
 
 	{%else %}
 

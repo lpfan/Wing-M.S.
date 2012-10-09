@@ -17,8 +17,9 @@
         <thead>
             <tr>
                 <th></th>
-                <th></th>
-                <th></th>
+                <th>Назва</th>
+                <th>Посилання на альбом</th>
+                <th>Посилання на аватарку</th>
                 <th></th>
             </tr>
         </thead>
@@ -36,10 +37,13 @@
                     <h4>{{album.title}}</h4>
                 </td>
                 <td>
-                    {{album.get_link()}}
+                    <code>{{album.get_link()}}</code>
                 </td>
                 <td>
-
+                    <code>/static/{{album.get_album_thumbnail()}}</code>
+                </td>
+                <td>
+                    <a href="{{url_for('.remove_album', album_id=album.id)}}" title="видалити">видалити</a>
                 </td>
             </tr>
             {%endfor%}
