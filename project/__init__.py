@@ -13,6 +13,7 @@ from flask.ext.admin import expose
 from admin.models import Article, Category, User, GeneralMeta, Menu
 from admin.gallery import GalleryView
 from flask.ext.admin.contrib import fileadmin
+from flask.ext.assets import Environment, Bundle
 from admin.utils import My_ModelView, UsersView
 from admin.index import GeneralView
 from admin.settings import SettingsView
@@ -77,5 +78,22 @@ admin.add_view(fileadmin.FileAdmin(
 
 app.debug = True
 SECRET_KEY = 'misha1987'
+
+# Flask Assets 
+assets = Environment(app)
+js = Bundle(
+    'js/jquery-1.8.1.min.js',
+    'js/jquery.form.js',
+    'js/jquery.lightbox-0.5.min.js',
+    'js/admin/jquery.cookie.js',
+    'js/admin/tmpl.min.js',
+    'js/admin/load-image.min.js',
+    'js/admin/bootstrap.min.js',
+    'js/admin/bootstrap-image-gallery.min.js',
+    'js/admin/jquery-ui.custom.min.js',
+    'js/admin/jquery.dynatree.min.js',
+    output='gen/admin_pack.js'
+    )
+assets.register('js_all', js)
 
 app.config.from_object(__name__)

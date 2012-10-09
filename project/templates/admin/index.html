@@ -1,16 +1,21 @@
 {% extends 'admin/master.html' %}
 
 {%block head %}
-    <link href="{{ url_for('static', filename='css/style_admin.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/ui.dynatree.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/admin/style_admin.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/admin/ui.dynatree.css') }}" rel="stylesheet">
 {%endblock%}
 {%block tail%}
   {{super()}}
+  <!--
 	<script type="text/javascript" src="{{url_for('static', filename='js/bootstrap.min.js')}}"></script>
   <script type="text/javascript" src="{{url_for('static', filename='js/jquery-ui.custom.min.js')}}"></script>
   <script type="text/javascript" src="{{url_for('static', filename='js/jquery.cookie.js')}}"></script>
   <script type="text/javascript" src="{{url_for('static', filename='js/jquery.dynatree.min.js')}}"></script>
    <script type="text/javascript" src="{{url_for('static', filename='js/jquery.form.js')}}"></script>
+ -->
+  {% assets "js_all" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {% endassets %}
 	<script type="text/javascript">
 
 
