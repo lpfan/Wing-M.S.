@@ -1,42 +1,64 @@
 {% extends 'admin/master.html' %}
+
+{%block tail%}
+	<script type='text/javascript'>
+		$(document).ready(function(){
+			$('#myTab a').click(function (e) {
+				e.preventDefault();
+				$(this).tab('show');
+			})
+		})
+	</script>
+{%endblock%}
+
 {% block body %}
-    <form method="POST" action="." class="form-horizontal">
-    {{ image_form_setting.csrf_token }}
-    <legend>Налаштування фотогалереї</legend>
-	    <div class="control-group">
-	    	{{ image_form_setting.allow_image_resize.label(class_='control-label') }} 
-	    	<div class="controls">
-	    		{{ image_form_setting.allow_image_resize(size=20) }}
-	    	</div>
-		</div>
-		<div class="control-group">
-			{{ image_form_setting.image_size_width.label(class_='control-label') }} 
-			<div class="controls">
-				{{ image_form_setting.image_size_width(size=20) }}
-			</div>
-		</div>
-		<div class="control-group">
-			{{ image_form_setting.image_size_height.label(class_='control-label') }} 
-			<div class="controls">
-				{{ image_form_setting.image_size_height(size=20) }}
-			</div>
-		</div>
-		<div class="control-group">
-			{{ image_form_setting.thumb_size_width.label(class_='control-label') }} 
-			<div class="controls">
-				{{ image_form_setting.thumb_size_width(size=20) }}
-			</div>
-		</div>
-		<div class="control-group">
-			{{ image_form_setting.thumb_size_height.label(class_='control-label') }} 
-			<div class="controls">
-				{{ image_form_setting.thumb_size_height(size=20) }}
-			</div>
-		</div>
-		<div class="control-group">
-			<div class="controls">
-	    		<input type="submit" value="Write" class="btn">
-	    	</div>
-	    </div>
-	</form>
+<ul class="nav nav-tabs" id="myTab">
+	<li class="active"><a href="#images">Налаштування галереї</a></li>
+</ul> 
+ 
+<div class="tab-content">
+	<div class="tab-pane active" id="images">
+		<form method="POST" action="." class="form-horizontal">
+		    {{ image_form_setting.csrf_token }}
+		    <legend>Налаштування фотогалереї</legend>
+			    <div class="control-group">
+			    	{{ image_form_setting.allow_image_resize.label(class_='control-label') }} 
+			    	<div class="controls">
+			    		{{ image_form_setting.allow_image_resize(size=20) }}
+			    	</div>
+				</div>
+				<div class="control-group">
+					{{ image_form_setting.image_size_width.label(class_='control-label') }} 
+					<div class="controls">
+						{{ image_form_setting.image_size_width(size=20) }}
+					</div>
+				</div>
+				<div class="control-group">
+					{{ image_form_setting.image_size_height.label(class_='control-label') }} 
+					<div class="controls">
+						{{ image_form_setting.image_size_height(size=20) }}
+					</div>
+				</div>
+				<div class="control-group">
+					{{ image_form_setting.thumb_size_width.label(class_='control-label') }} 
+					<div class="controls">
+						{{ image_form_setting.thumb_size_width(size=20) }}
+					</div>
+				</div>
+				<div class="control-group">
+					{{ image_form_setting.thumb_size_height.label(class_='control-label') }} 
+					<div class="controls">
+						{{ image_form_setting.thumb_size_height(size=20) }}
+					</div>
+				</div>
+				<div class="control-group">
+					<div class="controls">
+			    		<input type="submit" value="Write" class="btn">
+			    	</div>
+			    </div>
+		</form>
+	</div>
+</div>
+
+    
 {% endblock %}
