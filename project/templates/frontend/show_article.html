@@ -1,0 +1,16 @@
+{%extends "frontend/base.html" %}
+
+{%block body%}
+
+    {%if article%}
+
+        {{article.text|safe}}
+
+    {%else %}
+
+        створіть головну сторінку
+
+    {%endif%}
+
+
+{%endblock%}

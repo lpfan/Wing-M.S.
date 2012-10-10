@@ -1,27 +1,26 @@
 {%extends "admin/master.html"%}
 
 {%block head%}
-	<link href="{{ url_for('static', filename='css/jquery.fileupload-ui.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/admin/jquery.fileupload-ui.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/admin/style_admin.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/admin/jquery.lightbox-0.5.css') }}" rel="stylesheet">
 {%endblock%}
+
+{% assets "js_all" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
 
 {%block tail%}
 {{super()}}
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
-	<script src="{{url_for('static', filename='js/redactor.min.js')}}"></script>
-    <script src="{{url_for('static', filename='js/vendor/jquery.ui.widget.js')}}"></script>
-	<script src="http://blueimp.github.com/JavaScript-Templates/tmpl.min.js"></script>
-	<script src="http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js"></script>
-	<script src="http://blueimp.github.com/cdn/js/bootstrap.min.js"></script>
-	<script src="http://blueimp.github.com/Bootstrap-Image-Gallery/js/bootstrap-image-gallery.min.js"></script>
-	<script src="{{url_for('static', filename='js/jquery.iframe-transport.js')}}"></script>
-	<script src="{{url_for('static', filename='js/jquery.fileupload.js')}}"></script>
-	<script src="{{url_for('static', filename='js/jquery.fileupload-fp.js')}}"></script>
-	<script src="{{url_for('static', filename='js/jquery.fileupload-ui.js')}}"></script>
-	<script src="{{url_for('static', filename='js/locale.js')}}"></script>
-    <script src="{{url_for('static', filename='js/main.js')}}"></script>
-    <script src="{{url_for('static', filename='js/admin.js')}}"></script>
-	<script>
+    <script src="{{url_for('static', filename='js/admin/vendor/jquery.ui.widget.js')}}"></script>
+	<script src="{{url_for('static', filename='js/admin/jquery.iframe-transport.js')}}"></script>
+	<script src="{{url_for('static', filename='js/admin/jquery.fileupload.js')}}"></script>
+	<script src="{{url_for('static', filename='js/admin/jquery.fileupload-fp.js')}}"></script>
+	<script src="{{url_for('static', filename='js/admin/jquery.fileupload-ui.js')}}"></script>
+	<script src="{{url_for('static', filename='js/admin/locale.js')}}"></script>
+    <script src="{{url_for('static', filename='js/admin/main.js')}}"></script>
+    <script src="{{url_for('static', filename='js/jquery.lightbox-0.5.min.js')}}"></script>
+	<script type="text/javascript">
 	$(document).ready(function(){
     	$('#fileupload').fileupload({
         	dataType: 'json',
@@ -31,6 +30,12 @@
             //	});
             //}
     	});
+        $('#fileupload').bind('fileuploaddone', function (e, data) {
+            location.reload();
+        });
+
+        $('#js_images_table')
+            .find('a.image_preview').lightBox();
 });
 </script>
 
@@ -159,7 +164,7 @@
         <span>Зараз Ви переглядаєте альбом <strong>{{album.title}}</strong></span>
         <a href="{{url_for('.remove_album', album_id=album.id)}}" class="btn btn-danger">del</a>
 
-    	<table class="table table-striped table-bordered">
+    	<table id="js_images_table" class="table table-striped table-bordered">
             <thead>
                 <tr>
                     <th>
@@ -195,7 +200,9 @@
                             {{photo.id}}
                         </td>
                         <td>
-                            <img class="img-polaroid" src="{{url_for('static', filename=photo.thumb_url)}}" alt="{{photo.title}}" />
+                            <a class="image_preview" href="{{url_for('static', filename=photo.photo_url)}}" title="">
+                                <img class="img-polaroid" src="{{url_for('static', filename=photo.thumb_url)}}" alt="{{photo.title}}" />
+                            </a>
                         </td>
                         <td>
                             {{photo.title}}

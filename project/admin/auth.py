@@ -1,18 +1,52 @@
-from flask.ext import login, wtf
+# -*- coding: utf-8 -*-
+import pdb
 
-class LoginForm(wtf.Form):
-    login = wtf.TextField(validators=[wtf.required()])
-    password = wtf.PasswordField(validators=[wtf.required()])
+from flask.ext.login import LoginManager
+from flask.ext.login import login_user, logout_user, login_required
+from forms import LoginForm, RegistrationForm
+from flask import render_template, request, escape, redirect, url_for, flash
 
-    def validate_login(self, field):
-        user = self.get_user()
+from project import app
+from models import User
 
-        if user is None:
-            raise wtf.ValidationError('Invalid user')
+login_manager = LoginManager()
 
-        if user.password != self.password.data:
-            raise wtf.ValidationError('Invalid password')
+@login_manager.user_loader
+def load_user(userid):
+    try:
+        return User.get(id=userid)
+    except User.DoesNotExists, e:
+        print "Users are empty,%s" % e
 
-    def get_user(self):
-        return db.session.query(User).filter_by(login=self.login.data).first()
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    form = LoginForm(request.form or None)
+    if form.validate_on_submit():
+        user = User.get(login = form.login.raw_data)
+        login_user(user)
+        flash(u"Успішний вхід. Привіт %s" % user.login)
+        return redirect(url_for("admin.index"))
+    return render_template("admin/login.html", form=form)
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+@app.route("/register", methods=('POST', 'GET',))
+def register():
+    form = RegistrationForm(request.form or None)
+    if request.method == 'GET':
+        return render_template('admin/register.html', form=form)
+    else:
+        if form.validate_on_submit():
+            user = User()
+            form.populate_obj(user)
+            user.save()
+            return redirect(url_for('login'))
+
+
+
+
 

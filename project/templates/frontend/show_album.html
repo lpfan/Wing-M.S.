@@ -1,0 +1,46 @@
+{%extends "frontend/base.html" %}
+
+{% block body %}
+
+<div class="body5">
+    <div class="body6">
+        <div class="main">
+            <div class="wrapper">
+                {%if album %}
+                    <h2><span> Фотографії альбому {{album.title}} </span></h2>
+                {%endif%}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="body7">
+    <div class="main">
+        <section id="content">
+            <div class="wrapper">
+                {%if album%}
+                    <div id="js_pictures_holder">
+                        {%for pic in album.photo_set %}
+                            <a class="js_photo_container" href="/{{pic.photo_url}}" title="">
+                                <img src="/{{pic.get_thumbnail()}}" alt="" />
+                            </a>
+                        {%endfor%}
+                    </div>
+                {%else%}
+                    <h2><span></span></h2>
+                {%endif%}
+            </div>
+        </section>
+    </div>
+</div>
+<!-- / content -->
+
+{% endblock %}
+
+{%block tail %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('#js_pictures_holder')
+                .find('a.js_photo_container').lightBox();
+        })
+    </script>
+{%endblock%}

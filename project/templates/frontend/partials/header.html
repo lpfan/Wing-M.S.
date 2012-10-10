@@ -1,0 +1,29 @@
+            <header>
+                <div class="wrapper">
+                    <h1><a href="index.html" id="logo">Автоворота</a></h1>
+                    <div class="right">
+                        <nav>
+                            <ul id="top_nav">
+                                <li><a href="#">Карта сайту</a></li>
+                            </ul>
+                            <form id="search" method="post">
+                                <div>
+                                    <input type="submit" class="submit" value="">
+                                    <input type="text" class="input">
+                                </div>
+                            </form>
+                        </nav>
+                    </div>
+                </div>
+                <nav id="menu">
+                    {% if menu %}
+                    <ul> 
+                        {%for m in menu %}
+                            {{m.template|safe}}
+                        {%endfor%}
+                    </ul>
+                    {%else%}
+                        створіть меню
+                    {%endif%}
+                </nav>
+            </header>

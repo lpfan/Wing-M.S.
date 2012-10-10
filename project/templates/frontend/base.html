@@ -11,12 +11,15 @@
         {%endblock%}
     </title>
 <meta charset="utf-8">
+<meta name="description" content="{{general_meta_d}}">
+<meta name="keywords" content="{{general_meta_k}}">
 <link rel="stylesheet" href="{{url_for('static', filename='css/reset.css')}}" type="text/css" media="all">
 <link rel="stylesheet" href="{{url_for('static', filename='css/layout.css')}}" type="text/css" media="all">
 <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}" type="text/css" media="all">
-<script type="text/javascript" src="{{url_for('static', filename='js/jquery-1.8.1.min.js')}}" ></script>
-<script type="text/javascript" src="{{url_for('static', filename='js/jquery.nivo.slider.pack.js')}}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='js/imagepreloader.js')}}"></script>
+<link rel="stylesheet" href="{{url_for('static', filename='css/jquery.lightbox-0.5.css')}}" type="text/css" media="all">
+{% assets "js_public" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {% endassets %}
 <script type="text/javascript">
     preloadImages([
     "{{url_for('static', filename='images/menu1_active.gif')}}",
@@ -33,8 +36,60 @@
 <![endif]-->
 </head>
 <body id="page1">
-    {%block body %}
+    <div class="body1">
+        <div class="body2">
+            <div class="main">
+    <!-- header -->
+                {% include "frontend/partials/header.html" %}
+            </div>
+        </div>
+    </div>
+        <!-- slider -->
+        {% block slider %}
+            
+        {%endblock %}
 
-    {%endblock%}
+        {% block nav_container %}
+
+        {% endblock %}
+        <!-- endslider -->
+    <!-- / header -->
+    <!-- content -->
+        {%block body %}
+
+        {%endblock%}
+    <!-- footer -->
+        {% include "frontend/partials/footer.html" %}
+    <!-- / footer -->
+        </div>
+    </div>
+<script type="text/javascript">
+    $(window).load(function() {
+    $('#slider').nivoSlider({
+        effect:'sliceDown', //Specify sets like: 'fold,fade,sliceDown, sliceDownLeft, sliceUp, sliceUpLeft, sliceUpDown, sliceUpDownLeft'    
+        slices:20,
+        animSpeed:300,
+        pauseTime:9999999999,
+        startSlide:0, //Set starting Slide (0 index)
+        directionNav:true, //Next & Prev
+        directionNavHide:false, //Only show on hover
+        controlNav:false, //1,2,3...
+        controlNavThumbs:false, //Use thumbnails for Control Nav
+        controlNavThumbsFromRel:false, //Use image rel for thumbs
+        controlNavThumbsSearch: '.jpg', //Replace this with...
+        controlNavThumbsReplace: '_thumb.jpg', //...this in thumb Image src
+        keyboardNav:true, //Use left & right arrows
+        pauseOnHover:true, //Stop animation while hovering
+        manualAdvance:false, //Force manual transitions
+        captionOpacity:1, //Universal caption opacity
+        beforeChange: function(){},
+        afterChange: function(){},
+        slideshowEnd: function(){} //Triggers after all slides have been shown
+    });
+    });
+</script>
+{%block tail %}
+
+{%endblock%}
 </body>
 </html>

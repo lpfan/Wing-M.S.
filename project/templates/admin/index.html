@@ -1,36 +1,66 @@
 {% extends 'admin/master.html' %}
 
 {%block head %}
-    <link href="{{ url_for('static', filename='css/style_admin.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/ui.dynatree.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/redactor.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/admin/style_admin.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/admin/ui.dynatree.css') }}" rel="stylesheet">
 {%endblock%}
 {%block tail%}
   {{super()}}
+  <!--
 	<script type="text/javascript" src="{{url_for('static', filename='js/bootstrap.min.js')}}"></script>
-  <script type="text/javascript" src="{{url_for('static', filename='js/redactor.min.js')}}"></script>
   <script type="text/javascript" src="{{url_for('static', filename='js/jquery-ui.custom.min.js')}}"></script>
   <script type="text/javascript" src="{{url_for('static', filename='js/jquery.cookie.js')}}"></script>
   <script type="text/javascript" src="{{url_for('static', filename='js/jquery.dynatree.min.js')}}"></script>
    <script type="text/javascript" src="{{url_for('static', filename='js/jquery.form.js')}}"></script>
+ -->
+  {% assets "js_all" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {% endassets %}
 	<script type="text/javascript">
+
+
+  function admin_item_config_handler(e){
+    e.preventDefault();
+    var jThis = $(this);
+    var modal = $('#myModal');
+    var form = $('#js_menuItem_settings')
+    form.prop({
+      action:jThis.prop('href')
+    })
+    form
+      .find('#menuItemTitle')
+        .val(jThis.prop('title'));
+    var publicTmpl = '';
+    $.ajax({
+      url:jThis.prop('href'),
+      success:function(data, textStatus, jqXHR){
+        if (textStatus == 'success'){
+          $('#menuItemTemplate').val(data);
+        };
+        return;
+      }
+    })
+    modal.modal('show');
+    return false;
+  }
+
 		$(document).ready(function(){
-      $('#myTab a:first').tab('show');
-			
       $('#myTab a').click(function (e) {
         e.preventDefault();
         $(this).tab('show');
-      })
-
-      $('#js_add_new_menu_item').bind('click', function(e){
-				e.preventDefault();
-				$('#myModal').modal('show');
-				return false;
-			})
+      });
 
       var itemMenuHolder;
       var itemMenuTitle;
       var menu = $('#menu_structure');
+      //
+      var inputItemTitle = $('#inputItemTitle');
+      var inputItemUrl = $('#inputItemUrl');
+      //
+      var nodeParams;
+      //
+      var templateText = $('#itemTemplateText');
+      var itemUtilityTemplate = $('#itemUtilityTemplateText');
 
       menu
         .find('.dropdown-toggle')
@@ -42,135 +72,132 @@
       });
 
       $("#tree").dynatree({
-            onActivate: function(node) {
-                // A DynaTreeNode object is passed to the activation handler
-                // Note: we also get this event, if persistence is on, and the page is reloaded.
-                var node_key = node.data.key;
-                var node_url = node.data.href;
-                var node_title = node.data.title;
-                var children = node.data.children;
-                
-                var templateText = $('#itemTemplateText');
-                var itemUtilityTemplate = $('#itemUtilityTemplateText');
-
-                templateText.val('');
-                itemUtilityTemplate.val('');
-
-                var inputItemTitle = $('#inputItemTitle');
-                var inputItemUrl = $('#inputItemUrl');
-
-                inputItemTitle.prop({
-                  value:node_title
-                });
-
-                inputItemUrl.prop({
-                  value:node_url
-                });
-
-                var tmplText = '';
-
-                var childrenList = $('#js_children_list');
-                //clear childList
-                childrenList.html('');
-
-                itemMenuHolder = $('<li />').addClass('dropdown');
-
-                itemMenuTitle = $('<a />')
-                  .prop({
-                    href:'#',
-                    class:'dropdown-toggle'
-                  })
-                  .html(node_title);
-
-                itemMenuHolder.append(itemMenuTitle);
-
-                if(children && children.length > 0){
-                  var mainTab = $('#main');
-                  tmplText = '<li><a href="' + node_url + '" title="' + node_title +'">' + node_title + '</a>\n<ul>';
-
-                  var ddMenu = $('<ul />')
-                      .addClass('dropdown-menu')
-                      .prop('role', 'menu');
-
-                  $.each(children, function(i, val){
-                    tmplText += '\n\t<li>\n\t\t<a href="' + val.href + '" title="' + val.title +'">' + val.title + '</a>\n\t</li>';
-                    //generate children inputs
-                    var childInput = $('<input />')
-                      .prop({
-                        type:'text',
-                        id:'js_childItem_'+val.title+'_'+i,
-                        value:val.title
-                      })
-                      .appendTo(
-                        $('<div />').addClass('controls')
-                      );
-                    var childLabel = $('<label />')
-                      .prop({
-                        class:'control-label',
-                        for:'js_childItem_'+val.title+'_'+i
-                      })
-                      .text('Назва');
-                    childrenList.append(childLabel);
-                    $('<div />').addClass('controls')
-                      .append(childInput)
-                        .appendTo(childrenList);
-
-                    var ddMenuItem = $('<a />')
-                      .prop({
-                        href:'#'
-                      })
-                      .html(val.title);
-                    
-                    ddMenuItem = $('<li />').append(ddMenuItem);
-
-                    ddMenuItem.appendTo(ddMenu);
-
-                  });
-                  tmplText += '\n</ul>\n</li>';
-                  itemMenuHolder.append(ddMenu);
-                } else {
-                  tmplText = '<li><a href="' + node_url + '" title="' + node_title +'">' + node_title + '</a></li>';
-                };
-
-                templateText.val(tmplText);
-                itemUtilityTemplate.val(itemMenuHolder.html());
-                
-            },
-            initAjax: {url: "{{url_for('.content_structure')}}"},
-            persist: true,
-            /*
-            children: [ // Pass an array of nodes.
-                {title: "Item 1"},
-                {title: "Folder 2", isFolder: true,
-                    children: [
-                        {title: "Sub-item 2.1"},
-                        {title: "Sub-item 2.2"}
-                    ]
-                },
-                {title: "Item 3"}
-            ]
-            */
-            
-        });
+        onActivate: function(node) {
+          // get params of clicked node
+          nodeParams = {
+            'node_title' : node.data.title,
+            'node_url' : node.data.href,
+            'children' : node.data.children,
+            'node_key' : node.data.key
+          };
+          inputItemTitle.val(nodeParams.node_title);
+          inputItemUrl.val(nodeParams.node_url);
+          //
+          return;
+        },
+        initAjax: {url: "{{url_for('.content_structure')}}"},
+        persist: true,
+      });
         
         //$('#itemTemplateText').redactor();
 
-        $('#js_newItemSource').ajaxForm({
-          beforeSubmit : correctItemTemplate,
-          success: updateConstructorMenu
-        })
+      function createPublicTemplate(node_title, node_url, node_children){
+        var item = '';
+        if (node_children && node_children.length > 0){
+          var jHolder = $('<ul />');
+          var jLi = $('<li />');
+          $.each(node_children, function(i, val){
+            jLi.clone().append(
+              $('<a />')
+                .prop({
+                  href:val.href
+                })
+                .html(val.title)
+                ).appendTo(jHolder);
+          });
+          item = '<li>\n' + 
+                    '\t<a href="' + node_url + '" title="' + node_title +'">' + node_title + '</a>\n' + 
+                    jHolder.prop('outerHTML') + 
+                '</li>';
+          return item;
+        } 
+        item = '<li>\n\t<a href="' + node_url + '" title="' + node_title +'">' + node_title + '</a>\n</li>';
+        return item
+      }
 
-        function correctItemTemplate (formData, jqForm, options){
-          return true;
+      function createAdminTemplate(node_title, node_url, node_key, node_children){
+        var ddMenu = $('<ul />')
+          .addClass('dropdown-menu')
+          .prop('role', 'menu');
+        var ddTitle = $('<a />')
+          .prop({
+            class:'dropdown-toggle',
+            href:'#'
+          })
+          .html(node_title)
+          .append(
+            $('<b />').addClass('caret')
+          );
+        // set slug
+        $('#inputSlug').val(node_key)
+        //
+        if (node_children && node_children.length > 0){
+          $.each(node_children, function(i, val){
+            $('<li />').append(
+              $('<a />')
+                .prop({
+                  href:val.key,
+                  class:'js_menu_item_child'
+                })
+                .html(val.title)
+            ).appendTo(ddMenu);
+          });
+        }
+        var tmpl = ddTitle.prop('outerHTML') + ddMenu.prop('outerHTML');
+        return tmpl;
+      }
+
+      function createMenuTemplate(nodeParams){
+        //
+        var newMenuItem = {
+          'publicItem': '',
+          'adminItem' : ''
         }
 
-        function updateConstructorMenu(responseText, statusText, xhr, $form){
-          menu
-            .append(itemMenuHolder);
-          menu
-            .find('.dropdown-toggle')
-              .dropdown();
+        //check if node has children
+        if (nodeParams.children && nodeParams.children.length > 0){
+          newMenuItem.publicItem = createPublicTemplate(
+            nodeParams.node_title,
+            nodeParams.node_url,
+            nodeParams.children
+          );
+          newMenuItem.adminItem = createAdminTemplate(
+            nodeParams.node_title,
+            nodeParams.node_url,
+            nodeParams.node_key,
+            nodeParams.children
+          );
+        }else{
+          newMenuItem.publicItem = createPublicTemplate(nodeParams.node_title, nodeParams.node_url);
+          newMenuItem.adminItem = createAdminTemplate(nodeParams.node_title, nodeParams.node_url, nodeParams.node_key)
         }
+        //
+        templateText.val(newMenuItem.publicItem);
+        itemUtilityTemplate.val(newMenuItem.adminItem);
+        //
+        return;
+      }
+
+      function correctItemTemplate (formData, jqForm, options){
+        nodeParams.node_title = inputItemTitle.val();
+        createMenuTemplate(nodeParams);
+        return true;
+      }
+
+      function updateConstructorMenu(responseText, statusText, xhr, $form){
+        $form.resetForm();
+        location.reload();
+        return true;
+      };
+
+      $('#js_newItemSource').ajaxForm({
+        beforeSerialize : correctItemTemplate,
+        success: updateConstructorMenu
+      });
+
+      menu
+        .find('.js_edit_admin_menu_item')
+          .on('click', admin_item_config_handler);
 
 		});
 	</script>
@@ -178,11 +205,15 @@
 
 {% block body %}
 
+<div class="row">
+  <div class="span1 offset11">
+    <a href="{{url_for('logout')}}" title="">вихід</a>
+  </div>
+</div>
+
 <ul class="nav nav-tabs" id="myTab">
   <li class="active"><a href="#menu_settings">Налаштування головного меню</a></li>
-  <li><a href="#profile">Profile</a></li>
-  <li><a href="#messages">Messages</a></li>
-  <li><a href="#settings">Settings</a></li>
+  <li><a href="#profile">Пошукова оптимізація</a></li>
 </ul>
  
 <div class="tab-content">
@@ -194,7 +225,17 @@
         {%if menu %}
         <ul id="menu_structure" class="nav">
           {% for m in menu %}
-          <li class="dropdown">{{m.utility_template|safe}}</li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{m.title}}</a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a class="js_edit_admin_menu_item" href="{{url_for('.menu_settings', menu_id=m.id)}}" title="{{m.title}}">редагувати</a> 
+                </li>
+                <li>
+                  <a class="" href="{{url_for('.remove_menu_item', menu_id=m.id)}}">видалити</a>
+                </li>
+              </ul>
+            </li>
           {%endfor%}
         </ul>
         {%endif%}
@@ -204,69 +245,99 @@
     <div class="row">
       <div class="span4">
         <div id="tree"> </div>
-      </div>
 
-      <div class="span8">
-        <div id="item_options">
-          <form id="js_newItemSource" action="{{url_for('.new_menu_item')}}" method="POST" class="form-inline">
-            <legend>
-               Параметри нового пункту меню
-            </legend>
-            <ul class="nav nav-tabs" id="myTab">
-              <li class="active"><a href="#main">Основні параметри</a></li>
-              <li><a href="#additionals">Додатково</a></li>
-            </ul>
+        <form id="js_newItemSource" action="{{url_for('.new_menu_item')}}" method="POST" class="form-inline">
+            
+          <input type="hidden" name="itemTitle" type="text" id="inputItemTitle" />
+          <input type="hidden" name="itemUrl" id="inputItemUrl" />
+          <input type="hidden" name="itemSlug" id="inputSlug" />
 
-            <div class="tab-content">
-              <div class="tab-pane active" id="main">
-                
-                <div class="control-group">
-                  <label class="control-label" for="inputItemTitle">Назва</label>
-                  <div class="controls">
-                    <input name="itemTitle" type="text" id="inputItemTitle">
-                  </div>
-                </div>
-                
-                <div class="control-group">
-                  <label class="control-label" for="inputItemUrl">url</label>
-                  <div class="controls">
-                    <input name="itemUrl" type="text" id="inputItemUrl">
-                  </div>
-                </div>
-
-                <legend>
-                  Підпункти
-                </legend>
-                <div id="js_children_list" class="control-group">
-
-                </div>
-              </div>
-              <div class="tab-pane" id="additionals">
-                <div class="control-group">
-                  <label class="control-label" for="itemTemplateText">Шаблон</label>
-                  <div class="controls">
-                    <textarea name="itemTemplate" id="itemTemplateText"></textarea>
-                    <textarea name="itemUtilityTemplate" id="itemUtilityTemplateText" style="display:none;"></textarea>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <textarea name="itemTemplate" id="itemTemplateText" style="display:none;"></textarea>
+          <textarea name="itemUtilityTemplate" id="itemUtilityTemplateText" style="display:none;"></textarea>
 
             <div class="control-group">
               <div class="controls">
-                <button class="btn btn-danger">скасувати</button>
                 <input class="btn btn-primary" type="submit" value="Додати" />
               </div>
             </div>
 
           </form>
+      </div>
+
+      <div class="span8">
+        <div id="item_options">
+          
+          
         </div>
       </div>
     </div>
   </div>
-  <div class="tab-pane" id="profile">...</div>
-  <div class="tab-pane" id="messages">...</div>
-  <div class="tab-pane" id="settings">...</div>
+  <!-- META keyvords settings -->
+  <div class="tab-pane" id="profile">
+    <div class="navbar">
+      <h4>Загальні пошукові слова</h4>
+      <form action="{{url_for('.store_meta_info')}}" method="POST" class="">
+        {{meta_form.csrf_token}}
+        
+        <div class="control-group">
+
+          {{meta_form.meta_d.label(class="control-label")}}
+          <div class="controls">
+            {{meta_form.meta_d(style="margin:0 auto;height:100px;width:600px;")}}
+          </div>
+
+          {{meta_form.meta_d.description}}
+
+        </div>
+
+        <div class="control-group">
+
+          {{meta_form.meta_k.label(class="control-label")}}
+
+          <div class="controls">
+            {{meta_form.meta_k(style="margin:0 auto;height:100px;width:600px;")}}
+          </div>
+
+          {{meta_form.meta_k.description}}
+
+        </div>
+
+        <div class="control-group">
+          <div class="controls">
+            <input type="submit" class="btn btn-primary" value="зберегти" />
+          </div>
+        </div>
+      </div>
+      </form>
+
+  </div>
+
 </div>
+     
+   <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" class="modal hide fade" id="myModal" style="display: none;">
+            <div class="modal-header">
+              <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+              <h3 id="myModalLabel">Параметри пункта меню</h3>
+            </div>
+            <div class="modal-body">
+              <form id="js_menuItem_settings" method="POST">
+
+                 <div class="control-group">
+                  <label class="control-label" for="menuItemTitle">Назва пункта</label>
+                    <div class="controls">
+                      <input type="text" name="itemTitle" id="menuItemTitle" />
+                    </div>
+                    <div class="controls">
+                      <textarea id="menuItemTemplate" name="itemTemplate" rows="7" style="width:100%;"></textarea>
+                    </div>
+                </div>
+              
+            </div>
+            <div class="modal-footer">
+              <button data-dismiss="modal" class="btn">Закрити</button>
+              <input type="submit" class="btn btn-primary" value="Застосувати" />
+            </div>
+          </div>
+          </form>
 
 {% endblock %}
