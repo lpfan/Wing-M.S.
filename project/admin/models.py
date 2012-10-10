@@ -168,6 +168,9 @@ class Album(BaseModel):
         self.slug = return_slug(aTitle=self.title)
         super(Album, self).save()
 
+    def __unicode__(self):
+        return self.title
+
     def get_album_thumbnail(self):
         try:
             photos = [f for f in self.photo_set]

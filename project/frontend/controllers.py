@@ -4,7 +4,7 @@ import pdb
 from flask import Response, request, url_for, redirect, flash, render_template, abort
 
 from project import app
-from project.admin.models import Article, Menu, Category
+from project.admin.models import Article, Menu, Category, Album
 
 template_path = 'frontend/'
 
@@ -43,6 +43,15 @@ def show_category(cat_slug):
 def shot_cat_article(cat_id, article_slug=''):
     article = Article.filter(slug=article_slug).join(Category).where(Category.id==cat_id).get()
     return render_template(template_path+'show_article.html', article=article, title=article.title)
+
+@app.route('/albums/<string:album_slug>')
+def show_album(album_slug=''):
+    album = ''
+    try:
+        album = Album.get(slug=album_slug)
+    except Album.DoesNotExist, e:
+        print "Album does not exists, %s" % e
+    return render_template(template_path+'show_album', album=album, title=album)
 
 @app.route('/images/<string:filename>')
 def send_static_file(filename):
