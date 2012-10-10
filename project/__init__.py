@@ -94,6 +94,16 @@ js = Bundle(
     'js/admin/jquery.dynatree.min.js',
     output='gen/admin_pack.js'
     )
+js_public = Bundle(
+    'js/jquery-1.8.1.min.js',
+    'js/jquery.lightbox-0.5.min.js',
+    'js/jquery.form.js',
+    'js/imagepreloader.js',
+    'js/jquery.nivo.slider.pack.js',
+    output='gen/public_pack.js'
+    )
+
 assets.register('js_all', js)
+assets.register('js_public', js_public)
 
 app.config.from_object(__name__)

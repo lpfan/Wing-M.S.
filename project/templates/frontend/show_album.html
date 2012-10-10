@@ -18,9 +18,13 @@
         <section id="content">
             <div class="wrapper">
                 {%if album%}
-                    {%for pic in album.photo_set %}
-                        <img src="{{pic.get_thumbnail()}}" alt="" />
-                    {%endfor%}
+                    <div id="js_pictures_holder">
+                        {%for pic in album.photo_set %}
+                            <a class="js_photo_container" href="/{{pic.photo_url}}" title="">
+                                <img src="/{{pic.get_thumbnail()}}" alt="" />
+                            </a>
+                        {%endfor%}
+                    </div>
                 {%else%}
                     <h2><span></span></h2>
                 {%endif%}
@@ -30,5 +34,13 @@
 </div>
 <!-- / content -->
 
-
 {% endblock %}
+
+{%block tail %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('#js_pictures_holder')
+                .find('a.js_photo_container').lightBox();
+        })
+    </script>
+{%endblock%}
