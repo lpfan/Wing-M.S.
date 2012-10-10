@@ -53,6 +53,8 @@ def show_album(album_slug=''):
         print "Album does not exists, %s" % e
     return render_template(template_path+'show_album.html', album=album, title=album)
 
+
+
 @app.route('/images/<string:filename>')
 def send_static_file(filename):
     path = 'images/' + filename

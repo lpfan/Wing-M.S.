@@ -2,5 +2,33 @@
 
 {% block body %}
 
+<div class="body5">
+    <div class="body6">
+        <div class="main">
+            <div class="wrapper">
+                {%if album %}
+                    <h2><span> Фотографії альбому {{album.title}} </span></h2>
+                {%endif%}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="body7">
+    <div class="main">
+        <section id="content">
+            <div class="wrapper">
+                {%if album%}
+                    {%for pic in album.photo_set %}
+                        <img src="{{pic.get_thumbnail()}}" alt="" />
+                    {%endfor%}
+                {%else%}
+                    <h2><span></span></h2>
+                {%endif%}
+            </div>
+        </section>
+    </div>
+</div>
+<!-- / content -->
+
 
 {% endblock %}
