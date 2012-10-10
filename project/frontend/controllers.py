@@ -51,7 +51,7 @@ def show_album(album_slug=''):
         album = Album.get(slug=album_slug)
     except Album.DoesNotExist, e:
         print "Album does not exists, %s" % e
-    return render_template(template_path+'show_album', album=album, title=album)
+    return render_template(template_path+'show_album.html', album=album, title=album)
 
 @app.route('/images/<string:filename>')
 def send_static_file(filename):
