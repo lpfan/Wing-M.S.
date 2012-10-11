@@ -13,11 +13,17 @@
 
 {% block body %}
 <ul class="nav nav-tabs" id="myTab">
-	<li class="active"><a href="#images">Налаштування галереї</a></li>
-</ul> 
+	<li class="active"><a href="#basic_settings">Загальні налаштування</a></li>
+	<li><a href="#images">Налаштування галереї</a></li>
+</ul>
  
 <div class="tab-content">
-	<div class="tab-pane active" id="images">
+	<div class="tab-pane active" id="basic_settings">
+		<form class="form-horizontal">
+			<legend>Список плагінів</legend>
+		</form>
+	</div>
+	<div class="tab-pane" id="images">
 		<form method="POST" action="." class="form-horizontal">
 		    {{ image_form_setting.csrf_token }}
 		    <legend>Налаштування фотогалереї</legend>
